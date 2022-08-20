@@ -1,0 +1,4 @@
+﻿JWT Token authent documentation - in Blazor
+https://www.youtube.com/watch?v=bu6F4oeYdzA
+https://docs.microsoft.com/fr-fr/aspnet/core/blazor/security/webassembly/hosted-with-identity-server?view=aspnetcore-6.0&tabs=visual-studio
+https://www.prowaretech.com/articles/current/blazor/wasm/jwt-authentication-simple
