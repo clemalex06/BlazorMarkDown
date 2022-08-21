@@ -1,4 +1,4 @@
-using BlazorMarkDownApp;
+using BlazorMarkDownAppJwt.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
