@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using BlazorMarkDownAppJwt.Shared
+@inject HttpClient Http
+@inject IJSRuntime jsr
 
 <div class="page">
     <div class="sidebar">
@@ -7,11 +10,86 @@
 
     <main>
         <div class="top-row px-4">
+            @if (string.IsNullOrEmpty(userdata))
+            {
+                <a href="/login">Login</a>
+            } else
+            {
+                <a href="/Logout">Logout</a>
+            }
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code {
+
+	private List<WeatherForecast> forecasts;
+	string userdata;
+
+	private async Task<string> GetJWT()
+	{
+		userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(userdata))
+		{
+			var dataArray = userdata.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[1];
+		}
+		return null;
+	}
+
+	private async Task GetTodaysForecast()
+	{
+		try
+		{
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/weatherforecast/{DateTime.Now.ToString("yyyy-MM-dd")}");
+			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
+			var response = await Http.SendAsync(requestMsg);
+			if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+			{
+				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+				userdata = null;
+			}
+			else if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+				forecasts = null;
+			else if (response.IsSuccessStatusCode)
+			{
+				var forecast = await response.Content.ReadFromJsonAsync<WeatherForecast>();
+				forecasts.Clear();
+				forecasts.Add(forecast);
+			}
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		try
+		{
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/weatherforecast");
+			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
+			var response = await Http.SendAsync(requestMsg);
+			if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+			{
+				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+				userdata = null;
+			}
+			else if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+				forecasts = null;
+			else if (response.IsSuccessStatusCode)
+				forecasts = await response.Content.ReadFromJsonAsync<List<WeatherForecast>>();
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+}

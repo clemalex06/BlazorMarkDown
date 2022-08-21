@@ -2,6 +2,7 @@
 @using BlazorMarkDownAppJwt.Shared
 @inject HttpClient Http
 @inject IJSRuntime jsr
+@inject NavigationManager nav
 
 <h3>Login</h3>
 
@@ -38,8 +39,11 @@
 				LoginResult result = await msg.Content.ReadFromJsonAsync<LoginResult>();
 				message = result.message;
 				isDisabled = false;
-				if (result.success)
+				if (result.success){
 					await jsr.InvokeVoidAsync("localStorage.setItem", "user", $"{result.email};{result.jwtBearer}").ConfigureAwait(false);
+					nav.NavigateTo("/", true);
+				}
+
 			}
 		}
 	}
