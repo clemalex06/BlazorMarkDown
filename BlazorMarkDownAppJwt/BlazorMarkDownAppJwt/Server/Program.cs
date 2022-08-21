@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 
-builder.Services.AddTransient<IUserDatabase, UserDatabase>();  // NOTE: LOCAL AUTHENTICATION ADDED HERE; AddTransient() IS OK TO USE BECAUSE STATE IS SAVED TO THE DRIVE
+builder.Services.AddTransient<IUserDatabase, UserDatabase>(); 
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

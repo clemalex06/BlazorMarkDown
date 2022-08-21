@@ -16,6 +16,12 @@ namespace BlazorMarkDownAppJwt.Shared
 		[EmailAddress(ErrorMessage = "Email address is not valid.")]
 		public string email { get; set; } // NOTE: email will be the username, too
 
+		[Required(ErrorMessage = "First Name is required.")]
+		public string firstName { get; set; } // NOTE: for the moment not used
+
+		[Required(ErrorMessage = "Last Name is required.")]
+		public string lastName{ get; set; } // NOTE: for the moment not used
+
 		[Required(ErrorMessage = "Password is required.")]
 		[DataType(DataType.Password)]
 		public string password { get; set; }
