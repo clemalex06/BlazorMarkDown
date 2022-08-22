@@ -5,12 +5,12 @@ using System.Text;
 
 namespace BlazorMarkDownAppJwt.Server.Services.Users
 {
-    public class UserService : IUserService
+    public class UserJsonService : IUserService
     {
 		private readonly IWebHostEnvironment env;
 
 		private const string userPath = "Datas\\Json\\Users";
-		public UserService(IWebHostEnvironment env) => this.env = env;
+		public UserJsonService(IWebHostEnvironment env) => this.env = env;
 		private static string CreateHash(string password)
 		{
 			var salt = "997eff51db1544c7a3c2ddeb2053f052";

@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 
-builder.Services.AddTransient<IUserService, UserService>(); 
+builder.Services.AddTransient<IUserService, UserJsonService>(); 
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
