@@ -40,7 +40,15 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 		{
 			if (reg.password != reg.confirmpwd)
 				return new LoginResult { message = "Password and confirm password do not match.", success = false };
-			User newuser = await userdb.AddUser(reg.email, reg.password);
+			var regUser = new User
+			{
+				Email = reg.email,
+				Password = reg.password,
+				FirstName = reg.firstName,
+				LastName = reg.lastName,
+
+			};
+			User? newuser = await userdb.AddUser(regUser);
 			if (newuser != null)
 				return new LoginResult { message = "Registration successful.", jwtBearer = CreateJWT(newuser), email = reg.email, success = true };
 			return new LoginResult { message = "User already exists.", success = false };
@@ -50,7 +58,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 		[Route("api/auth/login")]
 		public async Task<LoginResult> Post([FromBody] LoginModel log)
 		{
-			User user = await userdb.AuthenticateUser(log.email, log.password);
+			User? user = await userdb.AuthenticateUser(log.email, log.password);
 			if (user != null)
 				return new LoginResult { message = "Login successful.", jwtBearer = CreateJWT(user), email = log.email, success = true };
 			return new LoginResult { message = "User/password not found.", success = false };

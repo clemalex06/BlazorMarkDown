@@ -27,9 +27,9 @@
 </div>
 
 @code {
-	string usermail;
+	string? usermail;
 
-	private async Task<string> GetUserMail()
+	private async Task<string?> GetUserMail()
 	{
 		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
 		if (!string.IsNullOrWhiteSpace(jwt))
@@ -48,7 +48,7 @@
 		{
 			usermail = await GetUserMail();
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
 			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
 			usermail = null;
