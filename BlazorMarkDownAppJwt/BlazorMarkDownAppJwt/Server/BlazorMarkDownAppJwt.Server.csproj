@@ -17,5 +17,9 @@
     <ProjectReference Include="..\Shared\BlazorMarkDownAppJwt.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Datas\Json\" />
+  </ItemGroup>
+
 
 </Project>

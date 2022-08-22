@@ -3,6 +3,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using BlazorMarkDownAppJwt.Shared;
+using BlazorMarkDownAppJwt.Server.Entities;
+using BlazorMarkDownAppJwt.Server.Services.Users;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
 {
@@ -31,11 +33,11 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             return null;
         }
 
-        private IUserDatabase userdb { get; }
+        private IUserService userService { get; }
 
-        public AuthController(IUserDatabase userdb)
+        public AuthController(IUserService userService)
         {
-            this.userdb = userdb;
+            this.userService = userService;
         }
 
         [HttpPost]
@@ -52,7 +54,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                 LastName = reg.lastName,
 
             };
-            User? newuser = await userdb.AddUser(regUser);
+            User? newuser = await userService.AddUser(regUser);
             if (newuser != null)
                 return new LoginResult { message = "Registration successful.", jwtBearer = CreateJWT(newuser), email = reg.email, success = true };
             return new LoginResult { message = "User already exists.", success = false };
@@ -62,7 +64,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [Route("api/auth/login")]
         public async Task<LoginResult> Post([FromBody] LoginModel log)
         {
-            User? user = await userdb.AuthenticateUser(log.email, log.password);
+            User? user = await userService.AuthenticateUser(log.email, log.password);
             if (user != null)
                 return new LoginResult { message = "Login successful.", jwtBearer = CreateJWT(user), email = log.email, success = true };
             return new LoginResult { message = "User/password not found.", success = false };

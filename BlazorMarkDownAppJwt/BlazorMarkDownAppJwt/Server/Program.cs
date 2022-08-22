@@ -3,18 +3,16 @@ using Microsoft.AspNetCore.ResponseCompression;
 
 
 
-using Microsoft.AspNetCore.Authentication.JwtBearer; // NOTE: THIS LINE OF CODE IS NEWLY ADDED
-using Microsoft.IdentityModel.Tokens; // NOTE: THIS LINE OF CODE IS NEWLY ADDED
-using BlazorMarkDownAppJwt.Server; // NOTE: THIS LINE OF CODE IS NEWLY ADDED
-
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using BlazorMarkDownAppJwt.Server.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 
-builder.Services.AddTransient<IUserDatabase, UserDatabase>(); 
+builder.Services.AddTransient<IUserService, UserService>(); 
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
