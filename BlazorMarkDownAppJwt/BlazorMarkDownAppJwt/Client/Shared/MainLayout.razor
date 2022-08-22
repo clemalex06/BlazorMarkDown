@@ -10,12 +10,13 @@
 
     <main>
         <div class="top-row px-4">
-            @if (string.IsNullOrEmpty(usermail))
+            @if (string.IsNullOrEmpty(userMail))
             {
                 <a href="/login">Login</a>
+				<a href="/register">Register</a>
             } else
             {
-				<a>Hello @usermail</a>
+				<a>Hello, @userMail</a>
                 <a href="/Logout">Logout</a>
             }
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
@@ -27,7 +28,7 @@
 </div>
 
 @code {
-	string? usermail;
+	string? userMail;
 
 	private async Task<string?> GetUserMail()
 	{
@@ -46,12 +47,12 @@
 		await base.OnInitializedAsync();
 		try
 		{
-			usermail = await GetUserMail();
+			userMail = await GetUserMail();
 		}
 		catch (Exception)
 		{
 			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-			usermail = null;
+			userMail = null;
 		}
 	}
 }
