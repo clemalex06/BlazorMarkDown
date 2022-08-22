@@ -1,4 +1,5 @@
 ﻿using BlazorMarkDownAppJwt.Server.Entities;
+using Newtonsoft.Json;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -15,24 +16,35 @@ namespace BlazorMarkDownAppJwt.Server.Services.Users
 			var salt = "997eff51db1544c7a3c2ddeb2053f052";
 			var md5 = new HMACMD5(Encoding.UTF8.GetBytes(salt + password));
 			byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
-			return System.Convert.ToBase64String(data);
+			return Convert.ToBase64String(data);
 		}
 		public async Task<User?> AuthenticateUser(string? email, string? password)
 		{
-			if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-				return null;
-			var path = System.IO.Path.Combine(env.ContentRootPath, userPath);
-			if (!System.IO.Directory.Exists(path))
-				return null;
-			path = System.IO.Path.Combine(path, email);
-			if (!System.IO.File.Exists(path))
-				return null;
-			if (await System.IO.File.ReadAllTextAsync(path) != CreateHash(password))
-				return null;
-			return new User
+			try
 			{
-				Email = email,
-			};
+				if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+					return null;
+				var path = Path.Combine(env.ContentRootPath, userPath);
+				if (!Directory.Exists(path))
+					return null;
+				path = Path.Combine(path, email);
+				if (!File.Exists(path))
+					return null;
+				User? existingUser = JsonConvert.DeserializeObject<User?>(await File.ReadAllTextAsync(path));
+				if (existingUser != null && existingUser.Password == CreateHash(password))
+				{
+					return existingUser;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			catch
+			{
+				return null;
+			}
+
 		}
 		public async Task<User?> AddUser(User addedUser)
 		{
@@ -40,13 +52,15 @@ namespace BlazorMarkDownAppJwt.Server.Services.Users
 			{
 				if (string.IsNullOrEmpty(addedUser.Email) || string.IsNullOrEmpty(addedUser.Password))
 					return null;
-				var path = System.IO.Path.Combine(env.ContentRootPath, userPath); // NOTE: THIS WILL CREATE THE "USERS" FOLDER IN THE PROJECT'S FOLDER!!!
-				if (!System.IO.Directory.Exists(path))
-					System.IO.Directory.CreateDirectory(path); // NOTE: MAKE SURE THERE ARE CREATE/WRITE PERMISSIONS
-				path = System.IO.Path.Combine(path, addedUser.Email);
-				if (System.IO.File.Exists(path))
+				var path = Path.Combine(env.ContentRootPath, userPath); // NOTE: THIS WILL CREATE THE "USERS" FOLDER IN THE PROJECT'S FOLDER!!!
+				if (!Directory.Exists(path))
+					Directory.CreateDirectory(path); // NOTE: MAKE SURE THERE ARE CREATE/WRITE PERMISSIONS
+				path = Path.Combine(path, addedUser.Email);
+				if (File.Exists(path))
 					return null;
-				await System.IO.File.WriteAllTextAsync(path, CreateHash(addedUser.Password));
+				addedUser.Password = CreateHash(addedUser.Password);
+
+				await File.WriteAllTextAsync(path, JsonConvert.SerializeObject(addedUser));
 				return addedUser;
 			}
 			catch

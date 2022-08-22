@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Datas\Json\" />
+    <Folder Include="Datas\Json\Users\" />
   </ItemGroup>
 
 
