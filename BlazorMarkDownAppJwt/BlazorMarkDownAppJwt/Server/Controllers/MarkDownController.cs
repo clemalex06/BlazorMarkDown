@@ -1,5 +1,6 @@
 ﻿using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
 using BlazorMarkDownAppJwt.Shared;
+using Markdig;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
@@ -18,11 +19,16 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [Route("api/markdown/")]
         public async Task<MarkDownModel> Get()
         {
+            string markdownDocument = string.Empty;
             var markdown = await markDownService.GetMarkdown();
+
+            if (markdown?.Document != null)
+                markdownDocument = markdown.Document;
 
             return new MarkDownModel
             {
-                Body = markdown != null ? markdown.Document : String.Empty,
+                Body = markdownDocument,
+                Preview = Markdown.ToHtml(markdownDocument),
         };
         }
     }
