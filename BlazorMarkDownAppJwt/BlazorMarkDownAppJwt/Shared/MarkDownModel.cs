@@ -8,5 +8,8 @@ namespace BlazorMarkDownAppJwt.Shared
 {
     public class MarkDownModel
     {
+        public string? Body { get; set; }
+
+        public string? Preview { get; set; }
     }
 }
