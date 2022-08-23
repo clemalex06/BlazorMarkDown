@@ -2,3 +2,13 @@
 https://www.youtube.com/watch?v=bu6F4oeYdzA
 https://docs.microsoft.com/fr-fr/aspnet/core/blazor/security/webassembly/hosted-with-identity-server?view=aspnetcore-6.0&tabs=visual-studio
 https://www.prowaretech.com/articles/current/blazor/wasm/jwt-authentication-simple
+
+
+Markdown editor
+https://jonhilton.net/blazor-markdown-editor/
+https://blazorise.com/docs/extensions/richtextedit
+
+sqllite : 
+https://www.thinktecture.com/en/blazor/ef-core-and-sqlite-in-browser/
+https://stackoverflow.com/questions/67966259/why-is-it-not-possible-to-use-sqlite-in-blazor-webassembly
+https://www.reddit.com/r/Blazor/comments/rhrwxa/blazor_webassembly_sqlite/

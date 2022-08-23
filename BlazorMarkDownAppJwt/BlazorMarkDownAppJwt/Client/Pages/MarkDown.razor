@@ -1,0 +1,44 @@
+﻿@page "/markdown"
+@using BlazorMarkDownAppJwt.Client.Components
+@using BlazorMarkDownAppJwt.Shared
+@inject HttpClient Http
+@inject IJSRuntime jsr
+
+<UserComponent></UserComponent>
+
+<h1>MarkDown</h1>
+
+<p>Let's use incredible MarkDwonEditor !'.</p>
+<div class="row">
+    <div class="col-6">
+        <textarea class="form-control" >
+			@markDownModel?.Body
+			</textarea>
+    </div>
+    <div class="col-6">
+       @((MarkupString) markDownModel?.Preview)
+    </div>
+</div>
+
+@code {
+    private MarkDownModel markDownModel;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		try
+		{
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
+			var response = await Http.SendAsync(requestMsg);
+			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+				markDownModel = null;
+			else if (response.IsSuccessStatusCode)
+				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
+		}
+		catch (Exception ex)
+		{
+
+		}
+	}
+
+}

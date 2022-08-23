@@ -6,13 +6,15 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BlazorMarkDownAppJwt.Server.Services.Users;
+using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 
-builder.Services.AddTransient<IUserService, UserJsonService>(); 
+builder.Services.AddTransient<IUserService, UserJsonService>();
+builder.Services.AddTransient<IMarkDownService, MarkDownService>();
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
