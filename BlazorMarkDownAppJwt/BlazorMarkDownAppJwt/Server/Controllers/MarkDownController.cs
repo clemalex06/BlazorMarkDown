@@ -8,9 +8,9 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
     [ApiController]
     public class MarkDownController : Controller
     {
-        private IMarkDownService markDownService { get; }
+        private IDocumentService markDownService { get; }
 
-        public MarkDownController(IMarkDownService markDownService)
+        public MarkDownController(IDocumentService markDownService)
         {
             this.markDownService = markDownService;
         }
@@ -20,10 +20,10 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         public async Task<MarkDownModel> Get()
         {
             string markdownDocument = string.Empty;
-            var markdown = await markDownService.GetMarkdown();
+            var document = await markDownService.GetMarkdown();
 
-            if (markdown?.Document != null)
-                markdownDocument = markdown.Document;
+            if (document?.MarkDown != null)
+                markdownDocument = document.MarkDown;
 
             return new MarkDownModel
             {

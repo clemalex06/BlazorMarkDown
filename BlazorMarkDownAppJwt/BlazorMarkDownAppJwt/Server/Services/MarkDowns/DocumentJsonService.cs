@@ -2,25 +2,25 @@
 
 namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 {
-    public class MarkDownService : IMarkDownService
+    public class DocumentJsonService : IDocumentService
     {
 
         private readonly IWebHostEnvironment env;
 
-        private const string markDownPath = "Datas\\Json\\Markdown";
-        public MarkDownService(IWebHostEnvironment env) => this.env = env;
-        public async Task<MarkDown?> GetMarkdown()
+        private const string documentPath = "Datas\\Json\\Markdown";
+        public DocumentJsonService(IWebHostEnvironment env) => this.env = env;
+        public async Task<Document?> GetMarkdown()
         {
-            var path = Path.Combine(env.ContentRootPath, markDownPath);
+            var path = Path.Combine(env.ContentRootPath, documentPath);
             if (!Directory.Exists(path))
                 return null;
             path = Path.Combine(path, "test.md");
             if (!File.Exists(path))
                 return null;
-            return new MarkDown
+            return new Document
             {
                 Id = 0,
-                Document = await File.ReadAllTextAsync(path),
+                MarkDown = await File.ReadAllTextAsync(path),
             };
         }
     }

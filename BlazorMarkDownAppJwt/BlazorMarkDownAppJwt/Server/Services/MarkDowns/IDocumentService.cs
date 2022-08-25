@@ -2,8 +2,8 @@
 
 namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 {
-    public interface IMarkDownService
+    public interface IDocumentService
     {
-        Task<MarkDown?> GetMarkdown(); 
+        Task<Document?> GetMarkdown(); 
     }
 }

@@ -19,7 +19,7 @@ var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Datas\\test_full
 // Add services to the container.
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseSqlite($"Data Source={dbPath}"));
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IMarkDownService, MarkDownService>();
+builder.Services.AddTransient<IDocumentService, DocumentService>();
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
