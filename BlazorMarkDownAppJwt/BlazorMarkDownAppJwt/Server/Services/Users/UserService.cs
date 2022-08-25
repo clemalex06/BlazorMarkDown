@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazorMarkDownAppJwt.Server.Services.Users
 {
-	public class UserSqlService : IUserService
+	public class UserService : IUserService
 	{
 		private DataBaseContext Ctx { get; set; }
 
-		public UserSqlService(DataBaseContext ctx)
+		public UserService(DataBaseContext ctx)
         {
             Ctx = ctx;
         }
