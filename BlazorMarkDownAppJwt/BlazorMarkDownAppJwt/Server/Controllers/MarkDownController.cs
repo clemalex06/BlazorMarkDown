@@ -1,6 +1,5 @@
 ﻿using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
 using BlazorMarkDownAppJwt.Shared;
-using Markdig;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
@@ -28,7 +27,6 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             return new MarkDownModel
             {
                 Body = markdownDocument,
-                Preview = Markdown.ToHtml(markdownDocument),
         };
         }
     }

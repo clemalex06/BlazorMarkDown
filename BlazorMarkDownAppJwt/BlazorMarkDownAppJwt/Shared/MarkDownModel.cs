@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Markdig;
+
 
 namespace BlazorMarkDownAppJwt.Shared
 {
     public class MarkDownModel
     {
-        public string? Body { get; set; }
+        public string Body { get; set; }
 
-        public string? Preview { get; set; }
+        public string Html { get { return Markdown.ToHtml(Body); } }
     }
 }
