@@ -11,9 +11,7 @@
 <p>Let's use incredible MarkDwonEditor !'.</p>
 <div class="row">
     <div class="col-6">
-        <textarea class="text-area-resized" >
-			@markDownModel?.Body
-			</textarea>
+        <textarea class="text-area-resized" @bind="markDownModel.Body"></textarea>
     </div>
     <div class="col-6">
        @((MarkupString) markDownModel?.Preview)
@@ -21,7 +19,10 @@
 </div>
 
 @code {
-    private MarkDownModel markDownModel;
+	private MarkDownModel markDownModel = new MarkDownModel
+	{
+		Body = string.Empty
+	};
 
 	protected override async Task OnInitializedAsync()
 	{
