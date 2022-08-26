@@ -23,20 +23,21 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         {
             try
             {
+
+                var markDownModel = new MarkDownModel
+                {
+                    Body = string.Empty,
+                };
+
                 var document = await markDownService.GetDocument();
 
                 if (document?.MarkDown != null)
                 {
-                    var markDownModel = new MarkDownModel
-                    {
-                        Body = document.MarkDown,
-                    };
-                    return Ok(markDownModel);
+
+                    markDownModel.Body = document.MarkDown;
                 }
-                else
-                {
-                    return NoContent();
-                }
+
+                return Ok(markDownModel);
             }
             catch (Exception ex)
             {
