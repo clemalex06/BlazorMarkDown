@@ -9,7 +9,7 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 
         private const string documentPath = "Datas\\Json\\Markdown";
         public DocumentJsonService(IWebHostEnvironment env) => this.env = env;
-        public async Task<Document?> GetMarkdown()
+        public async Task<Document?> GetDocument()
         {
             var path = Path.Combine(env.ContentRootPath, documentPath);
             if (!Directory.Exists(path))
@@ -22,6 +22,11 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
                 Id = 0,
                 MarkDown = await File.ReadAllTextAsync(path),
             };
+        }
+
+        public Task<Document?> UpsertDocument(string markDown)
+        {
+            throw new NotImplementedException();
         }
     }
 }

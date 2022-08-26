@@ -1,6 +1,8 @@
 ﻿using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
 using BlazorMarkDownAppJwt.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using BlazorMarkDownAppJwt.Server.Entities;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
 {
@@ -16,18 +18,65 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
         [HttpGet]
         [Route("api/markdown/")]
-        public async Task<MarkDownModel> Get()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
+        public async Task<IActionResult> Get()
         {
-            string markdownDocument = string.Empty;
-            var document = await markDownService.GetMarkdown();
-
-            if (document?.MarkDown != null)
-                markdownDocument = document.MarkDown;
-
-            return new MarkDownModel
+            try
             {
-                Body = markdownDocument,
-        };
+                var document = await markDownService.GetDocument();
+
+                if (document?.MarkDown != null)
+                {
+                    var markDownModel = new MarkDownModel
+                    {
+                        Body = document.MarkDown,
+                    };
+                    return Ok(markDownModel);
+                }
+                else
+                {
+                    return NoContent();
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/markdown/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
+        public async Task<IActionResult> Post([FromBody] MarkDownModel markDownModel)
+        {
+            if (string.IsNullOrWhiteSpace(markDownModel?.Body))
+            {
+                return BadRequest("model is not OK");
+            }
+
+            try
+            {
+                var updatedDocument = await markDownService.UpsertDocument(markDownModel.Body);
+
+                if (updatedDocument?.MarkDown != null)
+                {
+                    var updatedMarkDownModel = new MarkDownModel
+                    {
+                        Body = updatedDocument.MarkDown,
+                    };
+                    return Ok(updatedMarkDownModel);
+                }
+                else
+                {
+                    return BadRequest("Unable to retrieve updated document");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

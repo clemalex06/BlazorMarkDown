@@ -16,3 +16,6 @@ https://www.reddit.com/r/Blazor/comments/rhrwxa/blazor_webassembly_sqlite/
 https://docs.microsoft.com/fr-fr/ef/core/get-started/overview/first-app?tabs=netcore-cli
 https://dotnetthoughts.net/how-to-mock-dbcontext-for-unit-testing/
 https://docs.microsoft.com/fr-fr/ef/core/dbcontext-configuration/
+
+return Types : 
+https://docs.microsoft.com/fr-fr/aspnet/core/web-api/action-return-types?view=aspnetcore-6.0
