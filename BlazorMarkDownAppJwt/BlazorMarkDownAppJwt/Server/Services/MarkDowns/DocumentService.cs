@@ -22,7 +22,20 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
         {
             var document = await Ctx.Document.SingleOrDefaultAsync();
 
-            // TODO implement business code to update the document
+            if (document == null)
+            {
+                document = new Document
+                {
+                    MarkDown = markDown
+                };
+                Ctx.Add(document);
+            }
+            else
+            {
+                document.MarkDown = markDown;
+            }
+
+            await Ctx.SaveChangesAsync();
 
             return document;
         }
