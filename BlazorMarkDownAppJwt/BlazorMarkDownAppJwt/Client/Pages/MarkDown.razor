@@ -1,7 +1,9 @@
 ﻿@page "/markdown"
 @using BlazorMarkDownAppJwt.Client.Components
 @using BlazorMarkDownAppJwt.Shared
-@inject HttpClient Http
+@using System.Text
+@using Newtonsoft.Json
+@inject HttpClient HttpClient
 @inject IJSRuntime jsr
 
 <UserComponent></UserComponent>
@@ -12,7 +14,7 @@
 <div class="row">
 	<div class="mb-2 text-right">
 		<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
-		<button class="btn btn-primary" @onclick="UpdatePreview">Save Content</button>
+		<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
 	</div>
 </div>
 <div class="row">
@@ -27,16 +29,45 @@
 </div>
 
 @code {
+
+	private string userdata =  string.Empty;
+
+	private MarkupString markupString;
+
 	private MarkDownModel markDownModel = new MarkDownModel
 	{
 		Body = string.Empty
 	};
 
-	private MarkupString markupString;
 
 	private void UpdatePreview()
 	{
 		markupString = (MarkupString)markDownModel.Html;
+	}
+
+	private async Task SaveMarkDown()
+	{
+		var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
+		requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
+		requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8,"application/json");;
+		var response = await HttpClient.SendAsync(requestMsg);
+		if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+		{
+			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+			userdata = string.Empty;
+		}
+	}
+
+	private async Task<string> GetJWT()
+	{
+		userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(userdata))
+		{
+			var dataArray = userdata.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[1];
+		}
+		return string.Empty;
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -45,7 +76,7 @@
 		try
 		{
 			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
-			var response = await Http.SendAsync(requestMsg);
+			var response = await HttpClient.SendAsync(requestMsg);
 			if (response.IsSuccessStatusCode)
 			{
 				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();

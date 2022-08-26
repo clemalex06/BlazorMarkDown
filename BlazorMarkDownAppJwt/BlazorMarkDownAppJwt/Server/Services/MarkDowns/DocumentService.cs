@@ -14,13 +14,17 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
         }
         public async Task<Document?> GetDocument()
         {
-            var markDown = await Ctx.Document.SingleOrDefaultAsync();
-            return markDown;
+            var document = await Ctx.Document.SingleOrDefaultAsync();
+            return document;
         }
 
-        public Task<Document?> UpsertDocument(string markDown)
+        public async Task<Document?> UpsertDocument(string markDown)
         {
-            throw new NotImplementedException();
+            var document = await Ctx.Document.SingleOrDefaultAsync();
+
+            // TODO implement business code to update the document
+
+            return document;
         }
     }
 }
