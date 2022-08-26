@@ -11,33 +11,39 @@
 <h1>MarkDown</h1>
 
 <p>Let's use incredible MarkDownEditor !'.</p>
-<div class="row">
-	<div class="mb-2 text-right">
-		<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
-		<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
+@if (!string.IsNullOrEmpty(userdata))
+{
+	<div class="row">
+		<div class="mb-2 text-right">
+			<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
+			<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
+		</div>
 	</div>
-</div>
+}
 <div class="row">
-    <div class="col-6">
-		<h3>Edit</h3>
-        <textarea class="text-area-resized" @bind="markDownModel.Body"></textarea>
-    </div>
-    <div class="col-6">
+	@if (!string.IsNullOrEmpty(userdata))
+	{
+		<div class="col-6">
+			<h3>Edit</h3>
+			<textarea class="text-area-resized" @bind="markDownModel.Body"></textarea>
+		</div>
+	}
+	<div class="col-6">
 		<h3>Preview</h3>
 		<div>@markupString</div>
-    </div>
+	</div>
 </div>
 
 @code {
 
-	private string userdata =  string.Empty;
+	private string userdata = string.Empty;
 
 	private MarkupString markupString;
 
 	private MarkDownModel markDownModel = new MarkDownModel
-	{
-		Body = string.Empty
-	};
+		{
+			Body = string.Empty
+		};
 
 
 	private void UpdatePreview()
@@ -49,7 +55,7 @@
 	{
 		var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
 		requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
-		requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8,"application/json");;
+		requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
 		var response = await HttpClient.SendAsync(requestMsg);
 		if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
 		{
@@ -75,6 +81,7 @@
 		await base.OnInitializedAsync();
 		try
 		{
+			userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
 			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
 			var response = await HttpClient.SendAsync(requestMsg);
 			if (response.IsSuccessStatusCode)
