@@ -1,43 +1,101 @@
 ﻿@page "/markdown"
 @using BlazorMarkDownAppJwt.Client.Components
 @using BlazorMarkDownAppJwt.Shared
-@inject HttpClient Http
+@using System.Text
+@using Newtonsoft.Json
+@inject HttpClient HttpClient
 @inject IJSRuntime jsr
 
 <UserComponent></UserComponent>
 
 <h1>MarkDown</h1>
 
-<p>Let's use incredible MarkDwonEditor !'.</p>
+<p>Let's use incredible MarkDownEditor !'.</p>
+@if (!string.IsNullOrEmpty(userdata))
+{
+	<div class="row">
+		<div class="mb-2 text-right">
+			<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
+			<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
+		</div>
+	</div>
+}
 <div class="row">
-    <div class="col-6">
-        <textarea class="form-control" >
-			@markDownModel?.Body
-			</textarea>
-    </div>
-    <div class="col-6">
-       @((MarkupString) markDownModel?.Preview)
-    </div>
+	@if (!string.IsNullOrEmpty(userdata))
+	{
+		<div class="col-6">
+			<h3>Edit</h3>
+			<textarea class="text-area-resized" @bind="markDownModel.Body"></textarea>
+		</div>
+	}
+	<div class="col-6">
+		<h3>Preview</h3>
+		<div>@markupString</div>
+	</div>
 </div>
 
 @code {
-    private MarkDownModel markDownModel;
+
+	private string userdata = string.Empty;
+
+	private MarkupString markupString;
+
+	private MarkDownModel markDownModel = new MarkDownModel
+		{
+			Body = string.Empty
+		};
+
+
+	private void UpdatePreview()
+	{
+		markupString = (MarkupString)markDownModel.Html;
+	}
+
+	private async Task SaveMarkDown()
+	{
+		var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
+		requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
+		requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
+		var response = await HttpClient.SendAsync(requestMsg);
+		if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+		{
+			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+			userdata = string.Empty;
+		}
+	}
+
+	private async Task<string> GetJWT()
+	{
+		userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(userdata))
+		{
+			var dataArray = userdata.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[1];
+		}
+		return string.Empty;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		try
 		{
+			userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
 			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
-			var response = await Http.SendAsync(requestMsg);
-			if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
-				markDownModel = null;
-			else if (response.IsSuccessStatusCode)
+			var response = await HttpClient.SendAsync(requestMsg);
+			if (response.IsSuccessStatusCode)
+			{
 				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
+				markupString = (MarkupString)markDownModel.Html;
+			}
 		}
-		catch (Exception ex)
+		catch (Exception)
 		{
-
+			markDownModel = new MarkDownModel
+			{
+				Body = string.Empty
+			};
 		}
 	}
 

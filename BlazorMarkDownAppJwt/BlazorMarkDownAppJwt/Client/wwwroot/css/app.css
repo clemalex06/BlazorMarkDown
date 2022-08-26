@@ -12,6 +12,11 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.text-area-resized {
+    width: 100%;
+    height: 800px;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

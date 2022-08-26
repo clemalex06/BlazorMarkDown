@@ -7,14 +7,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BlazorMarkDownAppJwt.Server.Services.Users;
 using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
+using BlazorMarkDownAppJwt.Server.Entities;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Datas\\test_fullstack.db");
+
 // Add services to the container.
-
-
-builder.Services.AddTransient<IUserService, UserJsonService>();
-builder.Services.AddTransient<IMarkDownService, MarkDownService>();
+builder.Services.AddDbContext<DataBaseContext>(options => options.UseSqlite($"Data Source={dbPath}"));
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IDocumentService, DocumentService>();
 
 // NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
