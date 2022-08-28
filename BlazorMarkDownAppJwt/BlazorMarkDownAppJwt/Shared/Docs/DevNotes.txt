@@ -19,3 +19,7 @@ https://docs.microsoft.com/fr-fr/ef/core/dbcontext-configuration/
 
 return Types : 
 https://docs.microsoft.com/fr-fr/aspnet/core/web-api/action-return-types?view=aspnetcore-6.0
+
+
+unit tests : 
+https://stackoverflow.com/questions/54219742/mocking-ef-core-dbcontext-and-dbset
