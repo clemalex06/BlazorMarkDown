@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using BlazorMarkDownAppJwt.Client.Components
+@inject IJSRuntime jsr
 
 <PageTitle>MarkDown Main Page</PageTitle>
 
@@ -8,5 +9,36 @@
 <p>Let's use incredible MarkDownEditor App!.</p>
 
 <SurveyPrompt Title="How BlazorMarkDownApp has been built from scratch?" />
-<UserComponent></UserComponent>
-<MarkDown></MarkDown>
+<UserComponent UserMail="@userMail"></UserComponent>
+<MarkDownComponent UserMail="@userMail"></MarkDownComponent>
+
+@code {
+
+	string? userMail;
+
+	private async Task<string?> GetUserMail()
+	{
+		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(jwt))
+		{
+			var dataArray = jwt.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[0];
+		}
+		return null;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		try
+		{
+			userMail = await GetUserMail();
+		}
+		catch (Exception)
+		{
+			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+			userMail = null;
+		}
+	}
+}
