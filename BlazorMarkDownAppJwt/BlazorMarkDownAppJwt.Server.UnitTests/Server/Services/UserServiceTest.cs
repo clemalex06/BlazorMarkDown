@@ -1,11 +1,6 @@
 ﻿using BlazorMarkDownAppJwt.Server.Entities;
 using BlazorMarkDownAppJwt.Server.Services.Users;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 {
