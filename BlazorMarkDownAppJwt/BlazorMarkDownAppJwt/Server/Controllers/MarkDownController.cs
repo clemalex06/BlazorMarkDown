@@ -46,6 +46,36 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
         }
 
+        [HttpGet]
+        [Route("api/markdown/readme/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
+        public async Task<IActionResult> GetReadMe()
+        {
+            try
+            {
+
+                var markDownModel = new MarkDownModel
+                {
+                    Body = string.Empty,
+                };
+
+                var document = await markDownService.GetReadMeDocument();
+
+                if (document?.MarkDown != null)
+                {
+
+                    markDownModel.Body = document.MarkDown;
+                }
+
+                return Ok(markDownModel);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
+
         [Authorize]
         [HttpPost]
         [Route("api/markdown/")]

@@ -10,7 +10,7 @@
 {
 	<div class="spinner"></div>
 }
-else
+else if (!IsLoadingReadMe)
 {
 	if (!string.IsNullOrEmpty(UserMail))
 	{
@@ -57,11 +57,21 @@ else
 		}
 	</div>
 }
+else
+{
+	<div class="col-6">
+		<h3>README</h3>
+		<div>@markupString</div>
+	</div>
+}
 
 @code {
 
 	[Parameter]
 	public string? UserMail { get; set; }
+
+	[Parameter]
+	public bool IsLoadingReadMe { get; set; }
 
 	private bool isLoading = true;
 
@@ -130,7 +140,8 @@ else
 		isLoading = true;
 		try
 		{
-			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
+			var urlRoute = IsLoadingReadMe ? "api/markdown/readme/" : "/api/markdown/";
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
 			var response = await HttpClient.SendAsync(requestMsg);
 			if (response.IsSuccessStatusCode)
 			{
