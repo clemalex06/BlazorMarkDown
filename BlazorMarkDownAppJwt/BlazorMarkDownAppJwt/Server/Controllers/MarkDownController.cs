@@ -3,6 +3,7 @@ using BlazorMarkDownAppJwt.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using BlazorMarkDownAppJwt.Server.Entities;
+using System.Net;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
 {
@@ -41,7 +42,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
             }
 
         }
@@ -76,7 +77,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
             }
         }
     }

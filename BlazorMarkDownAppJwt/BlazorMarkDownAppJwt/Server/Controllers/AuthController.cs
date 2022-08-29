@@ -24,7 +24,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, user.Email)
-			};
+            };
 
                 var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(2), signingCredentials: credentials);
                 return new JwtSecurityTokenHandler().WriteToken(token);
@@ -44,30 +44,45 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [Route("api/auth/register")]
         public async Task<LoginResult> Post([FromBody] RegModel reg)
         {
-            if (reg.password != reg.confirmpwd)
-                return new LoginResult { message = "Password and confirm password do not match.", success = false };
-            var regUser = new User
+            try
             {
-                Email = reg.email,
-                Password = reg.password,
-                FirstName = reg.firstName,
-                LastName = reg.lastName,
+                if (reg.password != reg.confirmpwd)
+                    return new LoginResult { message = "Password and confirm password do not match.", success = false };
+                var regUser = new User
+                {
+                    Email = reg.email,
+                    Password = reg.password,
+                    FirstName = reg.firstName,
+                    LastName = reg.lastName,
 
-            };
-            User? newuser = await userService.AddUser(regUser);
-            if (newuser != null)
-                return new LoginResult { message = "Registration successful.", jwtBearer = CreateJWT(newuser), email = reg.email, success = true };
-            return new LoginResult { message = "User already exists.", success = false };
+                };
+                User? newuser = await userService.AddUser(regUser);
+                if (newuser != null)
+                    return new LoginResult { message = "Registration successful.", jwtBearer = CreateJWT(newuser), email = reg.email, success = true };
+                return new LoginResult { message = "User already exists.", success = false };
+
+            }
+            catch (Exception ex)
+            {
+                return new LoginResult { message = ex.Message, success = false };
+            }
         }
 
         [HttpPost]
         [Route("api/auth/login")]
         public async Task<LoginResult> Post([FromBody] LoginModel log)
         {
-            User? user = await userService.AuthenticateUser(log.email, log.password);
-            if (user != null)
-                return new LoginResult { message = "Login successful.", jwtBearer = CreateJWT(user), email = log.email, success = true };
-            return new LoginResult { message = "User/password not found.", success = false };
+            try
+            {
+                User? user = await userService.AuthenticateUser(log.email, log.password);
+                if (user != null)
+                    return new LoginResult { message = "Login successful.", jwtBearer = CreateJWT(user), email = log.email, success = true };
+                return new LoginResult { message = "User/password not found.", success = false };
+            }
+            catch (Exception ex)
+            {
+                return new LoginResult { message = ex.Message, success = false };
+            }
         }
     }
 }

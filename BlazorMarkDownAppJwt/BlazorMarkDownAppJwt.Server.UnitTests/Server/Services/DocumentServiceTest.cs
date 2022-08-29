@@ -1,6 +1,8 @@
 ﻿using BlazorMarkDownAppJwt.Server.Entities;
 using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
     {
         private DataBaseContext Ctx { get; set; }
 
+        private Mock<IWebHostEnvironment> WebHostEnvironmentMoq { get; set; }
+
         private DocumentService Service { get; set; }
 
 
@@ -21,7 +25,9 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         {
             var options = new DbContextOptionsBuilder().UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             this.Ctx = new DataBaseContext(options);
-            this.Service = new DocumentService(this.Ctx);
+
+            this.WebHostEnvironmentMoq = new Mock<IWebHostEnvironment>();
+            this.Service = new DocumentService(this.Ctx, this.WebHostEnvironmentMoq.Object);
         }
 
         [Test]
