@@ -1,4 +1,7 @@
-﻿JWT Token authent documentation - in Blazor
+﻿asp.net core 6
+https://docs.microsoft.com/fr-fr/aspnet/core/?view=aspnetcore-6.0
+
+JWT Token authent documentation - in Blazor
 https://www.youtube.com/watch?v=bu6F4oeYdzA
 https://docs.microsoft.com/fr-fr/aspnet/core/blazor/security/webassembly/hosted-with-identity-server?view=aspnetcore-6.0&tabs=visual-studio
 https://www.prowaretech.com/articles/current/blazor/wasm/jwt-authentication-simple
@@ -19,3 +22,16 @@ https://docs.microsoft.com/fr-fr/ef/core/dbcontext-configuration/
 
 return Types : 
 https://docs.microsoft.com/fr-fr/aspnet/core/web-api/action-return-types?view=aspnetcore-6.0
+
+
+unit tests : 
+https://stackoverflow.com/questions/54219742/mocking-ef-core-dbcontext-and-dbset
+
+examples of Apps
+https://stackedit.io/
+
+github peer reviews management
+https://codeburst.io/how-to-create-a-repository-and-send-a-pull-request-on-github-450e9d974f57
+https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-access-to-your-personal-repositories/inviting-collaborators-to-a-personal-repository
+https://github.com/orgs/community/discussions/23128
+https://docs.github.com/en/communities/moderating-comments-and-conversations/limiting-interactions-in-your-repository

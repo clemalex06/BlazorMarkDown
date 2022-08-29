@@ -6,21 +6,27 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
     public class DocumentService : IDocumentService
     {
 
-        private DataBaseContext Ctx { get; set; }
+        private readonly DataBaseContext ctx;
 
-        public DocumentService(DataBaseContext ctx)
+        private readonly IWebHostEnvironment env;
+
+        private const string documentPath = "Datas";
+
+
+        public DocumentService(DataBaseContext ctx, IWebHostEnvironment env)
         {
-            Ctx = ctx;
+            this.ctx = ctx;
+            this.env = env;
         }
         public async Task<Document?> GetDocument()
         {
-            var document = await Ctx.Document.SingleOrDefaultAsync();
+            var document = await ctx.Document.SingleOrDefaultAsync();
             return document;
         }
 
         public async Task<Document?> UpsertDocument(string markDown)
         {
-            var document = await Ctx.Document.SingleOrDefaultAsync();
+            var document = await ctx.Document.SingleOrDefaultAsync();
 
             if (document == null)
             {
@@ -28,16 +34,31 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
                 {
                     MarkDown = markDown
                 };
-                Ctx.Add(document);
+                ctx.Add(document);
             }
             else
             {
                 document.MarkDown = markDown;
             }
 
-            await Ctx.SaveChangesAsync();
+            await ctx.SaveChangesAsync();
 
             return document;
+        }
+
+        public async Task<Document?> GetReadMeDocument()
+        {
+            var path = Path.Combine(env.ContentRootPath, documentPath);
+            if (!Directory.Exists(path))
+                return null;
+            path = Path.Combine(path, "README.md");
+            if (!File.Exists(path))
+                return null;
+            return new Document
+            {
+                Id = 0,
+                MarkDown = await File.ReadAllTextAsync(path),
+            };
         }
     }
 }
