@@ -6,6 +6,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,6 +14,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 {
     public class DocumentServiceTest
     {
+        private string? testDataDir { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); } }
         private DataBaseContext Ctx { get; set; }
 
         private Mock<IWebHostEnvironment> WebHostEnvironmentMoq { get; set; }
@@ -41,5 +43,91 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             // Assert
             Assert.IsNull(result);
         }
+
+        [Test]
+        public async Task DocumentService_GetDocument_ReturnsDocument()
+        {
+            // Arrange
+
+            // Act
+            var result = await Service.GetDocument();
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void DocumentService_GetDocument_MultipleDocuments_ThrowException()
+        {
+            // Arrange
+            var document1 = new Document { Id = 1, MarkDown = "# Hello World1" };
+            var document2 = new Document { Id = 2, MarkDown = "# Hello World2" };
+            this.Ctx.Document.Add(document1);
+            this.Ctx.Document.Add(document2);
+            this.Ctx.SaveChanges();
+
+            // Act & Assert
+            Assert.ThrowsAsync<InvalidOperationException>(Service.GetDocument);
+
+            // Clean
+            this.Ctx.Document.Remove(document1);
+            this.Ctx.Document.Remove(document2);
+            this.Ctx.SaveChanges();
+        }
+
+        [Test]
+        public async Task DocumentService_Upsert_InsertDocument_ReturnsDocument()
+        {
+            // Arrange
+            var markDown = "# Hello World";
+
+            // Act
+            var result = await Service.UpsertDocument(markDown);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.MarkDown, Is.EqualTo(markDown));
+
+            // Clean
+            this.Ctx.Document.Remove(result);
+            this.Ctx.SaveChanges();
+        }
+
+        [Test]
+        public async Task DocumentService_Upsert_UpdateDocument_ReturnsDocument()
+        {
+            // Arrange
+            var document = new Document { Id = 1, MarkDown = "# Hello World" };
+            var markDownupdated = "# Hello World updated";
+            this.Ctx.Document.Add(document);
+            this.Ctx.SaveChanges();
+
+            // Act
+            var result = await Service.UpsertDocument(markDownupdated);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.MarkDown, Is.EqualTo(markDownupdated));
+
+            // Clean
+            this.Ctx.Document.Remove(result);
+            this.Ctx.SaveChanges();
+        }
+
+        [Test]
+        public async Task DocumentService_GetReadMeDocument_ReturnsNull()
+        {
+            // Arrange
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).ToString();
+            this.WebHostEnvironmentMoq.Setup(w => w.ContentRootPath).Returns(path);
+
+            // Act
+            var result = await Service.GetReadMeDocument();
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+
     }
 }

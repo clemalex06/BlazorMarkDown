@@ -17,7 +17,7 @@ namespace BlazorMarkDownAppJwt.Server.Services.Users
             if (string.IsNullOrEmpty(addedUser.Email)
                 || string.IsNullOrEmpty(addedUser.Password)
                 || string.IsNullOrEmpty(addedUser.FirstName)
-                || string.IsNullOrEmpty(addedUser.FirstName))
+                || string.IsNullOrEmpty(addedUser.LastName))
                 return null;
 
             var existingUser = await Ctx.Users.SingleOrDefaultAsync(u => u.Email == addedUser.Email);

@@ -46,7 +46,7 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
             return document;
         }
 
-        public async Task<Document?> GetReadMeDocument(string markDown)
+        public async Task<Document?> GetReadMeDocument()
         {
             var path = Path.Combine(env.ContentRootPath, documentPath);
             if (!Directory.Exists(path))

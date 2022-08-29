@@ -8,6 +8,6 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 
         Task<Document?> UpsertDocument(string markDown);
 
-        Task<Document?> GetReadMeDocument(string markDown);
+        Task<Document?> GetReadMeDocument();
     }
 }
