@@ -1,5 +1,4 @@
-﻿@page "/markdown"
-@using BlazorMarkDownAppJwt.Client.Components
+﻿@using BlazorMarkDownAppJwt.Client.Components
 @using BlazorMarkDownAppJwt.Shared
 @using System.Text
 @using Newtonsoft.Json
@@ -7,11 +6,6 @@
 @inject IJSRuntime jsr
 @inject NavigationManager nav
 
-<UserComponent></UserComponent>
-
-<h1>MarkDown</h1>
-
-<p>Let's use incredible MarkDownEditor !'.</p>
 @if (!string.IsNullOrEmpty(userdata))
 {
 	<div class="row">
