@@ -104,6 +104,67 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
+        public async Task MarkDownController_GetReadMe_ServiceReturnsDocument()
+        {
+            // Arrange
+            var document = new Document
+            {
+                Id = 1,
+                MarkDown = "# Hello World"
+            };
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ReturnsAsync(document);
+
+            // Act
+            var actionResult = await Controller.GetReadMe();
+
+            // Assert
+            var okObjectResult = actionResult as OkObjectResult;
+            var model = okObjectResult?.Value as MarkDownModel;
+
+            Assert.IsNotNull(okObjectResult);
+            Assert.IsNotNull(model);
+            Assert.That(model.Body, Is.EqualTo(document.MarkDown));
+        }
+
+        [Test]
+        public async Task MarkDownController_GetReadMe_ServiceReturnsNull()
+        {
+            // Arrange
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ReturnsAsync((Document?)null);
+
+            // Act
+            var actionResult = await Controller.GetReadMe();
+
+            // Assert
+            var okObjectResult = actionResult as OkObjectResult;
+            var model = okObjectResult?.Value as MarkDownModel;
+
+            Assert.IsNotNull(okObjectResult);
+            Assert.IsNotNull(model);
+            Assert.That(model.Body, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public async Task MarkDownController_GetReadMe_ServiceThrowsException()
+        {
+            // Arrange
+            var exception = new Exception("exception raised by service");
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ThrowsAsync(exception);
+
+            // Act
+            var actionResult = await Controller.GetReadMe();
+
+            // Assert
+            var result = actionResult as ObjectResult;
+            var model = result?.Value as Exception;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(model);
+            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+            Assert.That(model.Message, Is.EqualTo(exception.Message));
+        }
+
+        [Test]
         public async Task MarkDownController_Post_ServiceReturnsNull()
         {
             // Arrange
