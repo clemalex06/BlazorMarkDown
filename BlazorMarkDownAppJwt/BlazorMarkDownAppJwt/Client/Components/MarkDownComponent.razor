@@ -16,8 +16,9 @@ else if (MarkDownId != null)
 	{
 		<div class="row">
 			<div class="mb-3 text-right">
-				<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
-				<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
+				<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
+				<button class="btn btn-primary" @onclick="UpdateMarkDown">Update MarkDown</button>
+				<button class="btn btn-primary" @onclick="UpdateMarkDown">Create New MarkDown</button>
 				@if (checkPreview)
 				{
 					<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
@@ -85,7 +86,7 @@ else
 		};
 
 
-	private void UpdatePreview()
+	private void ReloadPreview()
 	{
 		markupString = (MarkupString)markDownModel.Html;
 	}
@@ -95,7 +96,7 @@ else
 		checkPreview = val;
 	}
 
-	private async Task SaveMarkDown()
+	private async Task UpdateMarkDown()
 	{
 		try
 		{
