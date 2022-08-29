@@ -6,56 +6,64 @@
 @inject IJSRuntime jsr
 @inject NavigationManager nav
 
-@if (!string.IsNullOrEmpty(UserMail))
+@if (isLoading)
 {
+	<div class="spinner"></div>
+}
+else
+{
+	if (!string.IsNullOrEmpty(UserMail))
+	{
+		<div class="row">
+			<div class="mb-3 text-right">
+				<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
+				<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
+				@if (checkPreview)
+				{
+					<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
+				}
+				else
+				{
+					<button class="btn btn-primary" @onclick="()=>CheckPreview(true)">View Preview generated</button>
+				}
+			</div>
+		</div>
+	}
 	<div class="row">
-		<div class="mb-3 text-right">
-			<button class="btn btn-primary" @onclick="UpdatePreview">Update Preview</button>
-			<button class="btn btn-primary" @onclick="SaveMarkDown">Save MarkDown</button>
-			@if (checkPreview)
+		<div class="col-6">
+			<h3>MarkDown Editor</h3>
+			@if (!string.IsNullOrEmpty(UserMail))
 			{
-				<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
+				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
 			}
 			else
 			{
-				<button class="btn btn-primary" @onclick="()=>CheckPreview(true)">View Preview generated</button>
+				<textarea class="form-control text-area-resized" disabled @bind="markDownModel.Body"></textarea>
 			}
-
 		</div>
-	</div>
-}
-<div class="row">
-	<div class="col-6">
-		<h3>MarkDown Editor</h3>
-		@if (!string.IsNullOrEmpty(UserMail))
+		@if (checkPreview)
 		{
-			<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
+			<div class="col-6">
+				<h3>MarkDown View</h3>
+				<div>@markupString</div>
+			</div>
 		}
 		else
 		{
-			<textarea class="form-control text-area-resized" disabled @bind="markDownModel.Body"></textarea>
+			<div class="col-6">
+				<h3>MarkDown Html Generated</h3>
+				<div>@markDownModel.Html</div>
+			</div>
 		}
 	</div>
-	@if (checkPreview)
-	{
-		<div class="col-6">
-			<h3>MarkDown View</h3>
-			<div>@markupString</div>
-		</div>
-	}
-	else
-	{
-		<div class="col-6">
-			<h3>MarkDown Html Generated</h3>
-			<div>@markDownModel.Html</div>
-		</div>
-	}
-</div>
+}
 
 @code {
 
 	[Parameter]
 	public string? UserMail { get; set; }
+
+	private bool isLoading = true;
 
 	private MarkupString markupString;
 
@@ -79,16 +87,29 @@
 
 	private async Task SaveMarkDown()
 	{
-		var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
-		requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
-		requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
-		var response = await HttpClient.SendAsync(requestMsg);
-		if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+		try
 		{
-			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-			nav.NavigateTo("/", true);
-			UserMail = string.Empty;
+			isLoading = true;
+			var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
+			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
+			requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
+			var response = await HttpClient.SendAsync(requestMsg);
+			if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+			{
+				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+				isLoading = false;
+				nav.NavigateTo("/", true);
+			}
 		}
+		catch (Exception)
+		{
+
+		}
+		finally
+		{
+			isLoading = false;
+		}
+
 	}
 
 	private async Task<string> GetJWT()
@@ -106,6 +127,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		isLoading = true;
 		try
 		{
 			var requestMsg = new HttpRequestMessage(HttpMethod.Get, "/api/markdown");
@@ -122,6 +144,10 @@
 			{
 				Body = string.Empty
 			};
+		}
+		finally
+		{
+			isLoading = false;
 		}
 	}
 
