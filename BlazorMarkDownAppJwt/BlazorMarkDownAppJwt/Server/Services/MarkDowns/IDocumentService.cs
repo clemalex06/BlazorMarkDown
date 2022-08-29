@@ -4,7 +4,7 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 {
     public interface IDocumentService
     {
-        Task<Document?> GetDocument();
+        Task<Document?> GetDocument(long id);
 
         Task<List<Document>> GetAllDocuments();
 

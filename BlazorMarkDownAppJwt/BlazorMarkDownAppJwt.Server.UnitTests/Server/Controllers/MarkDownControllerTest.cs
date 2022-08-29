@@ -30,10 +30,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 Id = 1,
                 MarkDown = "# Hello World"
             };
-            DocumentServiceMoq.Setup(d => d.GetDocument()).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.GetDocument(document.Id)).ReturnsAsync(document);
 
             // Act
-            var actionResult = await Controller.Get();
+            var actionResult = await Controller.Get(document.Id);
 
             // Assert
             var okObjectResult = actionResult as OkObjectResult;
@@ -48,10 +48,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         public async Task MarkDownController_Get_ServiceReturnsNull()
         {
             // Arrange
-            DocumentServiceMoq.Setup(d => d.GetDocument()).ReturnsAsync((Document?)null);
+            DocumentServiceMoq.Setup(d => d.GetDocument(1)).ReturnsAsync((Document?)null);
 
             // Act
-            var actionResult = await Controller.Get();
+            var actionResult = await Controller.Get(1);
 
             // Assert
             var okObjectResult = actionResult as OkObjectResult;
@@ -67,10 +67,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         {
             // Arrange
             var exception = new Exception("exception raised by service");
-            DocumentServiceMoq.Setup(d => d.GetDocument()).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.GetDocument(1)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.Get();
+            var actionResult = await Controller.Get(1);
 
             // Assert
             var result = actionResult as ObjectResult;

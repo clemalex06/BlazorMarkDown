@@ -10,7 +10,7 @@
 {
 	<div class="spinner"></div>
 }
-else if (!IsLoadingReadMe)
+else if (MarkDownId != null)
 {
 	if (!string.IsNullOrEmpty(UserMail))
 	{
@@ -71,7 +71,7 @@ else
 	public string? UserMail { get; set; }
 
 	[Parameter]
-	public bool IsLoadingReadMe { get; set; }
+	public long? MarkDownId { get; set; }
 
 	private bool isLoading = true;
 
@@ -140,7 +140,7 @@ else
 		isLoading = true;
 		try
 		{
-			var urlRoute = IsLoadingReadMe ? "api/markdown/readme/" : "/api/markdown/";
+			var urlRoute = MarkDownId == null ? "api/markdown/readme/" : $"/api/markdown?currentId={MarkDownId}";
 			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
 			var response = await HttpClient.SendAsync(requestMsg);
 			if (response.IsSuccessStatusCode)

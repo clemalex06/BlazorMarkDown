@@ -18,9 +18,9 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
             this.ctx = ctx;
             this.env = env;
         }
-        public async Task<Document?> GetDocument()
+        public async Task<Document?> GetDocument(long id)
         {
-            var document = await ctx.Document.SingleOrDefaultAsync();
+            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id);
             return document;
         }
 

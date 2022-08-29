@@ -18,9 +18,9 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         }
 
         [HttpGet]
-        [Route("api/markdown/")]
+        [Route("api/markdown")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] long currentId)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     Body = string.Empty,
                 };
 
-                var document = await markDownService.GetDocument();
+                var document = await markDownService.GetDocument(currentId);
 
                 if (document?.MarkDown != null)
                 {

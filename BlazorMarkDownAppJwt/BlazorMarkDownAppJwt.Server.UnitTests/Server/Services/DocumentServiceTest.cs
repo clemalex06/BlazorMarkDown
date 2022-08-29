@@ -33,7 +33,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             // Arrange
 
             // Act
-            var result = await Service.GetDocument();
+            var result = await Service.GetDocument(1);
 
             // Assert
             Assert.IsNull(result);
@@ -45,30 +45,30 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             // Arrange
 
             // Act
-            var result = await Service.GetDocument();
+            var result = await Service.GetDocument(1);
 
             // Assert
             Assert.IsNull(result);
         }
 
-        [Test]
-        public void DocumentService_GetDocument_MultipleDocuments_ThrowException()
-        {
-            // Arrange
-            var document1 = new Document { Id = 1, MarkDown = "# Hello World1" };
-            var document2 = new Document { Id = 2, MarkDown = "# Hello World2" };
-            this.Ctx.Document.Add(document1);
-            this.Ctx.Document.Add(document2);
-            this.Ctx.SaveChanges();
+        //[Test]
+        //public void DocumentService_GetDocument_MultipleDocuments_ThrowException()
+        //{
+        //    // Arrange
+        //    var document1 = new Document { Id = 1, MarkDown = "# Hello World1" };
+        //    var document2 = new Document { Id = 2, MarkDown = "# Hello World2" };
+        //    this.Ctx.Document.Add(document1);
+        //    this.Ctx.Document.Add(document2);
+        //    this.Ctx.SaveChanges();
 
-            // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(Service.GetDocument);
+        //    // Act & Assert
+        //    Assert.ThrowsAsync<InvalidOperationException>(Service.GetDocument);
 
-            // Clean
-            this.Ctx.Document.Remove(document1);
-            this.Ctx.Document.Remove(document2);
-            this.Ctx.SaveChanges();
-        }
+        //    // Clean
+        //    this.Ctx.Document.Remove(document1);
+        //    this.Ctx.Document.Remove(document2);
+        //    this.Ctx.SaveChanges();
+        //}
 
         [Test]
         public async Task DocumentService_Upsert_InsertDocument_ReturnsDocument()

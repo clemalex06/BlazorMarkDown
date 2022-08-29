@@ -1,44 +1,65 @@
 ﻿@page "/"
 @using BlazorMarkDownAppJwt.Client.Components
+@using BlazorMarkDownAppJwt.Shared
+@inject HttpClient HttpClient
 @inject IJSRuntime jsr
 
 <PageTitle>MarkDown Main Page</PageTitle>
 
-<h1>MarkDown Editor</h1>
+<h1>MarkDown List</h1>
 
 <p>Let's use incredible MarkDownEditor App!.</p>
-
 <SurveyPrompt Title="How BlazorMarkDownApp has been built from scratch?" />
-<UserComponent UserMail="@userMail"></UserComponent>
-<MarkDownComponent UserMail="@userMail" IsLoadingReadMe=false></MarkDownComponent>
+
+@if (isLoading)
+{
+	<div class="spinner"></div>
+}
+else {
+	<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var markDown in markDowns)
+				{
+					<tr>
+						<td>MarKdown @markDown.Id</td>
+						<td><a href="/markdowndetail/@markDown.Id">View in Editor</a></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+}
 
 @code {
+	private bool isLoading = false;
+	private List<MarkDownModel> markDowns;
 
-	string? userMail;
-
-	private async Task<string?> GetUserMail()
-	{
-		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
-		if (!string.IsNullOrWhiteSpace(jwt))
-		{
-			var dataArray = jwt.Split(';', 2);
-			if (dataArray.Length == 2)
-				return dataArray[0];
-		}
-		return null;
-	}
-
-	protected override async Task OnInitializedAsync()
+		protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		isLoading = true;
 		try
 		{
-			userMail = await GetUserMail();
+			var urlRoute = "/api/markdowns/";
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
+			var response = await HttpClient.SendAsync(requestMsg);
+			if (response.IsSuccessStatusCode)
+			{
+				markDowns = await response.Content.ReadFromJsonAsync<List<MarkDownModel>>();
+			}
 		}
 		catch (Exception)
 		{
-			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-			userMail = null;
+			markDowns = new List<MarkDownModel>();
+		}
+		finally
+		{
+			isLoading = false;
 		}
 	}
 }
