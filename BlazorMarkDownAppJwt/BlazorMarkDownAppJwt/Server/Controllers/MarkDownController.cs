@@ -2,6 +2,7 @@
 using BlazorMarkDownAppJwt.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 using System.Net;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
@@ -68,6 +69,33 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                 }
 
                 return Ok(markDownModel);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("api/markdowns/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkDownModel>))]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+
+                var documents = await markDownService.GetAllDocuments();
+
+                var markdowns = documents?.Select(d => new MarkDownModel
+                {
+                    Id = d.Id,
+                    Body = d.MarkDown,
+                }).ToList();
+
+
+
+                return Ok(markdowns);
             }
             catch (Exception ex)
             {

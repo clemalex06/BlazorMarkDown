@@ -1,0 +1,66 @@
+﻿@page "/markdownList"
+@using BlazorMarkDownAppJwt.Client.Components
+@using BlazorMarkDownAppJwt.Shared
+@inject HttpClient HttpClient
+@inject IJSRuntime jsr
+
+<PageTitle>MarkDown List</PageTitle>
+
+<h1>MarkDown Editor</h1>
+
+<p>Let's use incredible MarkDownEditor App!.</p>
+
+<h3>MarkDownList</h3>
+
+@if (isLoading)
+{
+	<div class="spinner"></div>
+}
+else {
+	<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var markDown in markDowns)
+				{
+					<tr>
+						<td>MarKdown @markDown.Id</td>
+						<td><a href="/@markDown.Id">View in Editor</a></td>
+					</tr>
+				}
+			</tbody>
+		</table>
+}
+
+@code {
+	private bool isLoading = false;
+	private List<MarkDownModel> markDowns;
+
+		protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		isLoading = true;
+		try
+		{
+			var urlRoute = "/api/markdowns/";
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
+			var response = await HttpClient.SendAsync(requestMsg);
+			if (response.IsSuccessStatusCode)
+			{
+				markDowns = await response.Content.ReadFromJsonAsync<List<MarkDownModel>>();
+			}
+		}
+		catch (Exception)
+		{
+			markDowns = new List<MarkDownModel>();
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+}

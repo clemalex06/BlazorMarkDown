@@ -60,5 +60,10 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
                 MarkDown = await File.ReadAllTextAsync(path),
             };
         }
+
+        public async Task<List<Document>> GetAllDocuments()
+        {
+            return await ctx.Document.ToListAsync();
+        }
     }
 }
