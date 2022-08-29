@@ -1,4 +1,4 @@
-﻿@page "/markdownList"
+﻿@page "/markdownlist"
 @using BlazorMarkDownAppJwt.Client.Components
 @using BlazorMarkDownAppJwt.Shared
 @inject HttpClient HttpClient
@@ -29,7 +29,7 @@ else {
 				{
 					<tr>
 						<td>MarKdown @markDown.Id</td>
-						<td><a href="/@markDown.Id">View in Editor</a></td>
+						<td><a href="/markdowndetail/@markDown.Id">View in Editor</a></td>
 					</tr>
 				}
 			</tbody>

@@ -1,0 +1,47 @@
+﻿@page "/markdowndetail/{currentId:long?}"
+@using BlazorMarkDownAppJwt.Client.Components
+@inject IJSRuntime jsr
+
+<PageTitle>MarkDown Main Page</PageTitle>
+
+<h1>MarkDown Editor</h1>
+
+<p>Let's use incredible MarkDownEditor App!.</p>
+
+<SurveyPrompt Title="How BlazorMarkDownApp has been built from scratch?" />
+<UserComponent UserMail="@userMail"></UserComponent>
+<MarkDownComponent UserMail="@userMail" IsLoadingReadMe=false></MarkDownComponent>
+
+@code {
+
+	string? userMail;
+
+	[Parameter]
+	public long? CurrentId { get; set; } = null;
+
+	private async Task<string?> GetUserMail()
+	{
+		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(jwt))
+		{
+			var dataArray = jwt.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[0];
+		}
+		return null;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		try
+		{
+			userMail = await GetUserMail();
+		}
+		catch (Exception)
+		{
+			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+			userMail = null;
+		}
+	}
+}
