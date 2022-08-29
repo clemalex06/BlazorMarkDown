@@ -1,5 +1,6 @@
 ﻿asp.net core 6
 https://docs.microsoft.com/fr-fr/aspnet/core/?view=aspnetcore-6.0
+https://go.microsoft.com/fwlink/?linkid=2148851
 
 JWT Token authent documentation - in Blazor
 https://www.youtube.com/watch?v=bu6F4oeYdzA
