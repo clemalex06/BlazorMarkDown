@@ -12,29 +12,15 @@
 }
 else if (MarkDownId != null)
 {
-	if (!string.IsNullOrEmpty(UserMail))
-	{
-		<div class="row">
-			<div class="mb-3 text-right">
-				<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
-				<button class="btn btn-primary" @onclick="UpdateMarkDown">Update MarkDown</button>
-				<button class="btn btn-primary" @onclick="UpdateMarkDown">Create New MarkDown</button>
-				@if (checkPreview)
-				{
-					<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
-				}
-				else
-				{
-					<button class="btn btn-primary" @onclick="()=>CheckPreview(true)">View Preview generated</button>
-				}
-			</div>
-		</div>
-	}
 	<div class="row">
 		<div class="col-6">
-			<h3>MarkDown Editor</h3>
+			<h3>MarkDown @MarkDownId : Editor</h3>
 			@if (!string.IsNullOrEmpty(UserMail))
 			{
+				<div class="mb-3 text-right">
+					<button class="btn btn-primary" @onclick="UpdateMarkDown">Update MarkDown</button>
+					<button class="btn btn-primary" @onclick="UpdateMarkDown">Create New MarkDown</button>
+				</div>
 				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
 			}
 			else
@@ -45,14 +31,28 @@ else if (MarkDownId != null)
 		@if (checkPreview)
 		{
 			<div class="col-6">
-				<h3>MarkDown View</h3>
+				<h3>MarkDown @MarkDownId : PreView</h3>
+				@if (!string.IsNullOrEmpty(UserMail))
+				{
+					<div class="mb-3 text-right">
+						<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
+						<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
+					</div>
+				}
 				<div>@markupString</div>
 			</div>
 		}
 		else
 		{
 			<div class="col-6">
-				<h3>MarkDown Html Generated</h3>
+				<h3>MarkDown @MarkDownId : Html Generated</h3>
+				@if (!string.IsNullOrEmpty(UserMail))
+				{
+					<div class="mb-3 text-right">
+						<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
+						<button class="btn btn-primary" @onclick="()=>CheckPreview(true)">View Preview generated</button>
+					</div>
+				}
 				<div>@markDownModel.Html</div>
 			</div>
 		}
