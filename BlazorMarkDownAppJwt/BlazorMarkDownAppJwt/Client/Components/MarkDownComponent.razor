@@ -18,8 +18,8 @@ else if (MarkDownId != null)
 			@if (!string.IsNullOrWhiteSpace(UserMail))
 			{
 				<div class="mb-3 text-right">
-					<button class="btn btn-success" @onclick="UpdateMarkDown">Update MarkDown</button>
-					<button class="btn btn-success" @onclick="UpdateMarkDown">Create New MarkDown</button>
+					<button class="btn btn-success" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Update MarkDown</button>
+					<button class="btn btn-success" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Create New MarkDown</button>
 				</div>
 				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
 			}
@@ -96,12 +96,12 @@ else
 		checkPreview = val;
 	}
 
-	private async Task UpdateMarkDown()
+	private async Task UpsertMarkDown(HttpMethod method)
 	{
 		try
 		{
 			isLoading = true;
-			var requestMsg = new HttpRequestMessage(HttpMethod.Post, $"/api/markdown");
+			var requestMsg = new HttpRequestMessage(method, $"/api/markdown");
 			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
 			requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
 			var response = await HttpClient.SendAsync(requestMsg);
@@ -110,6 +110,12 @@ else
 				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
 				isLoading = false;
 				nav.NavigateTo("/", true);
+			}
+			else if (response.IsSuccessStatusCode)
+			{
+				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
+				markupString = (MarkupString)markDownModel.Html;
+				MarkDownId = markDownModel.Id;
 			}
 		}
 		catch (Exception)
