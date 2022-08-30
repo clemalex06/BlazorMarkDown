@@ -31,10 +31,11 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
                 var document = await markDownService.GetDocument(currentId);
 
-                if (document?.MarkDown != null)
+                if (!string.IsNullOrWhiteSpace(document?.MarkDown))
                 {
 
                     markDownModel.Body = document.MarkDown;
+                    markDownModel.Id = document.Id;
                 }
 
                 return Ok(markDownModel);
@@ -121,7 +122,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                 {
                     var updatedMarkDownModel = new MarkDownModel
                     {
-                        Id= markDownModel.Id,
+                        Id= updatedDocument.Id,
                         Body = updatedDocument.MarkDown,
                     };
                     return Ok(updatedMarkDownModel);

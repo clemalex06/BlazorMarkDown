@@ -10,8 +10,22 @@
 {
 	<div class="spinner"></div>
 }
-else if (MarkDownId != null)
+else if (MarkDownId != null && MarkDownId != 0)
 {
+	<div class="row">
+		@if (!string.IsNullOrWhiteSpace(successMessage))
+		{
+			<div class="alert alert-success" role="alert">
+				@successMessage
+			</div>
+		}
+		@if (!string.IsNullOrWhiteSpace(errorMessage))
+		{
+			<div class="alert alert-danger" role="alert">
+				@errorMessage
+			</div>
+		}
+	</div>
 	<div class="row">
 		<div class="col-6">
 			<h3>MarkDown @MarkDownId : Editor</h3>
@@ -78,13 +92,58 @@ else
 
 	private MarkupString markupString;
 
+	private string successMessage = string.Empty;
+	private string errorMessage = string.Empty;
+
 	private bool checkPreview = true;
 
 	private MarkDownModel markDownModel = new MarkDownModel
-		{
-			Body = string.Empty
-		};
+	{
+		Id = 0,
+		Body = string.Empty
+	};
 
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		isLoading = true;
+		successMessage = string.Empty;
+		errorMessage = string.Empty;
+		try
+		{
+			var urlRoute = MarkDownId == null ? "api/markdown/readme/" : $"/api/markdown?currentId={MarkDownId}";
+			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
+			var response = await HttpClient.SendAsync(requestMsg);
+			if (response.IsSuccessStatusCode)
+			{
+				await SetSuccess(response, string.Empty);
+			}
+			else
+			{
+				SetError("an error has occured");
+			}
+		}
+		catch (Exception ex)
+		{
+			SetError(ex.Message);
+		}
+		finally
+		{
+			isLoading = false;
+		}
+	}
+
+	private async Task<string> GetJWT()
+	{
+		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+		if (!string.IsNullOrWhiteSpace(UserMail))
+		{
+			var dataArray = jwt.Split(';', 2);
+			if (dataArray.Length == 2)
+				return dataArray[1];
+		}
+		return string.Empty;
+	}
 
 	private void ReloadPreview()
 	{
@@ -101,6 +160,8 @@ else
 		try
 		{
 			isLoading = true;
+			successMessage = string.Empty;
+			errorMessage = string.Empty;
 			var requestMsg = new HttpRequestMessage(method, $"/api/markdown");
 			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
 			requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
@@ -109,59 +170,23 @@ else
 			{
 				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
 				isLoading = false;
+				SetError("You are not authorized, please log in again");
 				nav.NavigateTo("/", true);
 			}
 			else if (response.IsSuccessStatusCode)
 			{
-				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
-				markupString = (MarkupString)markDownModel.Html;
-				MarkDownId = markDownModel.Id;
+				var message = method == HttpMethod.Post ?
+				"Updated successfully" : method == HttpMethod.Put ? "Created successfully" : string.Empty;
+				await SetSuccess(response, message);
+			}
+			else
+			{
+				SetError("an error has occured");
 			}
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
-
-		}
-		finally
-		{
-			isLoading = false;
-		}
-
-	}
-
-	private async Task<string> GetJWT()
-	{
-		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
-		if (!string.IsNullOrWhiteSpace(UserMail))
-		{
-			var dataArray = jwt.Split(';', 2);
-			if (dataArray.Length == 2)
-				return dataArray[1];
-		}
-		return string.Empty;
-	}
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-		isLoading = true;
-		try
-		{
-			var urlRoute = MarkDownId == null ? "api/markdown/readme/" : $"/api/markdown?currentId={MarkDownId}";
-			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
-			var response = await HttpClient.SendAsync(requestMsg);
-			if (response.IsSuccessStatusCode)
-			{
-				markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
-				markupString = (MarkupString)markDownModel.Html;
-			}
-		}
-		catch (Exception)
-		{
-			markDownModel = new MarkDownModel
-			{
-				Body = string.Empty
-			};
+			SetError(ex.Message);
 		}
 		finally
 		{
@@ -169,4 +194,23 @@ else
 		}
 	}
 
+	private async Task SetSuccess(HttpResponseMessage response, string message)
+	{
+		markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
+		markupString = (MarkupString)markDownModel.Html;
+		MarkDownId = markDownModel.Id;
+		successMessage = message;
+	}
+
+	private void SetError(string message)
+	{
+		markDownModel = new MarkDownModel
+		{
+			Id = -1,
+			Body = string.Empty
+		};
+		markupString = (MarkupString)markDownModel.Html;
+		MarkDownId = markDownModel.Id;
+		errorMessage = message;
+	}
 }
