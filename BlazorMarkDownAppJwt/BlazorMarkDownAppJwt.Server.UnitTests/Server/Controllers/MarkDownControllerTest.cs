@@ -170,9 +170,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new MarkDownModel
             {
+                Id = 1,
                 Body = "# Hello World",
             };
-            DocumentServiceMoq.Setup(d => d.UpsertDocument(model.Body)).ReturnsAsync((Document?)null);
+            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync((Document?)null);
 
             // Act
             var actionResult = await Controller.Post(model);
@@ -192,15 +193,16 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new MarkDownModel
             {
+                Id = 1,
                 Body = "# Hello World",
             };
             var document = new Document
             {
                 Id = 1,
-                MarkDown = null,
+                MarkDown = string.Empty,
             };
 
-            DocumentServiceMoq.Setup(d => d.UpsertDocument(model.Body)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync(document);
 
             // Act
             var actionResult = await Controller.Post(model);
@@ -220,11 +222,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new MarkDownModel
             {
+                Id = 1,
                 Body = "# Hello World",
             };
             var exception = new Exception("exception raised by service");
 
-            DocumentServiceMoq.Setup(d => d.UpsertDocument(model.Body)).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ThrowsAsync(exception);
 
             // Act
             var actionResult = await Controller.Post(model);
@@ -246,6 +249,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var markDownBody = "# Hello World";
             var model = new MarkDownModel
             {
+                Id = 1,
                 Body = markDownBody,
             };
             var document = new Document
@@ -254,7 +258,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 MarkDown = markDownBody,
             };
 
-            DocumentServiceMoq.Setup(d => d.UpsertDocument(model.Body)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync(document);
 
             // Act
             var actionResult = await Controller.Post(model);

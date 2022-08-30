@@ -1,5 +1,5 @@
 ﻿<p>
-	@if (string.IsNullOrEmpty(UserMail))
+	@if (string.IsNullOrWhiteSpace(UserMail))
 	{
 		<span><a href="/login">Login</a>   <a href="/register">Register</a></span>
 	}

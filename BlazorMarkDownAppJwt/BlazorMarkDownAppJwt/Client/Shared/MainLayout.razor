@@ -9,7 +9,7 @@
 
     <main>
         <div class="top-row px-4">
-            @if (string.IsNullOrEmpty(userMail))
+            @if (string.IsNullOrWhiteSpace(userMail))
             {
                 <a href="/login">Login</a>
 				<a href="/register">Register</a>

@@ -71,13 +71,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         //}
 
         [Test]
-        public async Task DocumentService_Upsert_InsertDocument_ReturnsDocument()
+        public async Task DocumentService_InsertDocument_ReturnsDocument()
         {
             // Arrange
             var markDown = "# Hello World";
 
             // Act
-            var result = await Service.UpsertDocument(markDown);
+            var result = await Service.InsertDocument(markDown);
 
             // Assert
             Assert.IsNotNull(result);
@@ -89,7 +89,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task DocumentService_Upsert_UpdateDocument_ReturnsDocument()
+        public async Task DocumentService_UpdateDocument_ReturnsDocument()
         {
             // Arrange
             var document = new Document { Id = 1, MarkDown = "# Hello World" };
@@ -98,7 +98,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.UpsertDocument(markDownupdated);
+            var result = await Service.UpdateDocument(document.Id, markDownupdated);
 
             // Assert
             Assert.IsNotNull(result);

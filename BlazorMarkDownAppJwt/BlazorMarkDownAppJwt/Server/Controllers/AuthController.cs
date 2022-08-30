@@ -16,7 +16,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             var secretkey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("THIS IS THE SECRET KEY")); // NOTE: SAME KEY AS USED IN Program.cs FILE
             var credentials = new SigningCredentials(secretkey, SecurityAlgorithms.HmacSha256);
 
-            if (!string.IsNullOrEmpty(user.Email))
+            if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var claims = new[]
                 {

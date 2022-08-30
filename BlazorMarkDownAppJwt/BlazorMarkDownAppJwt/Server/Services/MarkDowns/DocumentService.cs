@@ -24,22 +24,13 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
             return document;
         }
 
-        public async Task<Document?> UpsertDocument(string markDown)
+        public async Task<Document?> InsertDocument(string markDown)
         {
-            var document = await ctx.Document.SingleOrDefaultAsync();
-
-            if (document == null)
+            var document = new Document
             {
-                document = new Document
-                {
-                    MarkDown = markDown
-                };
-                ctx.Add(document);
-            }
-            else
-            {
-                document.MarkDown = markDown;
-            }
+                MarkDown = markDown
+            };
+            ctx.Add(document);
 
             await ctx.SaveChangesAsync();
 
@@ -65,5 +56,16 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
         {
             return await ctx.Document.ToListAsync();
         }
-    }
+
+		public async Task<Document?> UpdateDocument(long id, string markDown)
+		{
+            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id);
+            if (document != null)
+            {
+                document.MarkDown = markDown;
+                await ctx.SaveChangesAsync();
+            }
+            return document;
+        }
+	}
 }

@@ -8,7 +8,9 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 
         Task<List<Document>> GetAllDocuments();
 
-        Task<Document?> UpsertDocument(string markDown);
+        Task<Document?> InsertDocument(string markDown);
+
+        Task<Document?> UpdateDocument(long id, string markDown);
 
         Task<Document?> GetReadMeDocument();
     }

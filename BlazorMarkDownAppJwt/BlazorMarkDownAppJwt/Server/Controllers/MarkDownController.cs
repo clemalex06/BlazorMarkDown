@@ -117,12 +117,13 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
             try
             {
-                var updatedDocument = await markDownService.UpsertDocument(markDownModel.Body);
+                var updatedDocument = await markDownService.UpdateDocument(markDownModel.Id, markDownModel.Body);
 
-                if (updatedDocument?.MarkDown != null)
+                if (!string.IsNullOrWhiteSpace(updatedDocument?.MarkDown))
                 {
                     var updatedMarkDownModel = new MarkDownModel
                     {
+                        Id= markDownModel.Id,
                         Body = updatedDocument.MarkDown,
                     };
                     return Ok(updatedMarkDownModel);
@@ -130,6 +131,41 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                 else
                 {
                     throw new Exception("Unable to retrieve updated document");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("api/markdown/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
+        public async Task<IActionResult> Put([FromBody] MarkDownModel markDownModel)
+        {
+            if (string.IsNullOrWhiteSpace(markDownModel?.Body))
+            {
+                return BadRequest("model is not OK");
+            }
+
+            try
+            {
+                var insertedDocument = await markDownService.InsertDocument(markDownModel.Body);
+
+                if (!string.IsNullOrWhiteSpace(insertedDocument?.MarkDown))
+                {
+                    var insertedMarkDownModel = new MarkDownModel
+                    {
+                        Id = insertedDocument.Id,
+                        Body = insertedDocument.MarkDown,
+                    };
+                    return Ok(insertedMarkDownModel);
+                }
+                else
+                {
+                    throw new Exception("Unable to retrieve inserted document");
                 }
             }
             catch (Exception ex)
