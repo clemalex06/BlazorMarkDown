@@ -26,7 +26,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, user.Email)
             };
 
-                var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(2), signingCredentials: credentials);
+                var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(10), signingCredentials: credentials);
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
 
