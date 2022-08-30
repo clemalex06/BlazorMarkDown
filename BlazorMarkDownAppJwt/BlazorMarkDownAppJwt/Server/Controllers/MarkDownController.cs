@@ -101,7 +101,6 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex);
             }
-
         }
 
         [Authorize]
