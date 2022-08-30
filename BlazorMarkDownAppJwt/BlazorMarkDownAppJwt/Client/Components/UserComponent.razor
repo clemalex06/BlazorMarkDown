@@ -1,43 +1,16 @@
-﻿@inject IJSRuntime jsr
-
-<p>
-	@if (string.IsNullOrEmpty(userMail))
+﻿<p>
+	@if (string.IsNullOrEmpty(UserMail))
 	{
-		<span><a href="/register">Register</a> <a href="/login">Login</a></span>
+		<span><a href="/login">Login</a>   <a href="/register">Register</a></span>
 	}
 	else
 	{
-		<span>Hello, @userMail <a href="/logout">(Logout)</a></span>
+		<span>Hello, @UserMail <a href="/logout">(Logout)</a></span>
 	}
 </p>
 
 @code {
 
-	string? userMail;
-
-	private async Task<string?> GetUserMail()
-	{
-		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
-		if (!string.IsNullOrWhiteSpace(jwt))
-		{
-			var dataArray = jwt.Split(';', 2);
-			if (dataArray.Length == 2)
-				return dataArray[0];
-		}
-		return null;
-	}
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-		try
-		{
-			userMail = await GetUserMail();
-		}
-		catch (Exception)
-		{
-			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-			userMail = null;
-		}
-	}
+	[Parameter]
+	public string? UserMail { get; set; }
 }

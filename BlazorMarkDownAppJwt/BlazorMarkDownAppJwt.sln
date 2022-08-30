@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMarkDownAppJwt.Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMarkDownAppJwt.Shared", "BlazorMarkDownAppJwt\Shared\BlazorMarkDownAppJwt.Shared.csproj", "{720B01CB-CEAB-4ACF-94CB-DE7CD9729153}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMarkDownAppJwt.UnitTests", "BlazorMarkDownAppJwt.Server.UnitTests\BlazorMarkDownAppJwt.UnitTests.csproj", "{ED247C60-3C6A-42B2-B9E0-03E3B52D2C9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMarkDownAppJwt.UnitTests", "BlazorMarkDownAppJwt.Server.UnitTests\BlazorMarkDownAppJwt.UnitTests.csproj", "{ED247C60-3C6A-42B2-B9E0-03E3B52D2C9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

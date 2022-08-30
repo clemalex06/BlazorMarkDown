@@ -1,5 +1,6 @@
 ﻿asp.net core 6
 https://docs.microsoft.com/fr-fr/aspnet/core/?view=aspnetcore-6.0
+https://go.microsoft.com/fwlink/?linkid=2148851
 
 JWT Token authent documentation - in Blazor
 https://www.youtube.com/watch?v=bu6F4oeYdzA
@@ -35,3 +36,6 @@ https://codeburst.io/how-to-create-a-repository-and-send-a-pull-request-on-githu
 https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-access-to-your-personal-repositories/inviting-collaborators-to-a-personal-repository
 https://github.com/orgs/community/discussions/23128
 https://docs.github.com/en/communities/moderating-comments-and-conversations/limiting-interactions-in-your-repository
+
+spinner
+https://www.pragimtech.com/blog/blazor/blazor-loading-indicator/
