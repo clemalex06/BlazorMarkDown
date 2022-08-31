@@ -16,7 +16,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
             var secretkey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("THIS IS THE SECRET KEY")); // NOTE: SAME KEY AS USED IN Program.cs FILE
             var credentials = new SigningCredentials(secretkey, SecurityAlgorithms.HmacSha256);
 
-            if (!string.IsNullOrEmpty(user.Email))
+            if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var claims = new[]
                 {
@@ -26,7 +26,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, user.Email)
             };
 
-                var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(2), signingCredentials: credentials);
+                var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(10), signingCredentials: credentials);
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
 

@@ -17,9 +17,9 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         }
 
         [HttpGet]
-        [Route("api/markdown/")]
+        [Route("api/markdown")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] long currentId)
         {
             try
             {
@@ -29,12 +29,13 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     Body = string.Empty,
                 };
 
-                var document = await markDownService.GetDocument();
+                var document = await markDownService.GetDocument(currentId);
 
-                if (document?.MarkDown != null)
+                if (!string.IsNullOrWhiteSpace(document?.MarkDown))
                 {
 
                     markDownModel.Body = document.MarkDown;
+                    markDownModel.Id = document.Id;
                 }
 
                 return Ok(markDownModel);
@@ -76,6 +77,32 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
         }
 
+        [HttpGet]
+        [Route("api/markdowns/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkDownModel>))]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+
+                var documents = await markDownService.GetAllDocuments();
+
+                var markdowns = documents?.Select(d => new MarkDownModel
+                {
+                    Id = d.Id,
+                    Body = d.MarkDown,
+                }).ToList();
+
+
+
+                return Ok(markdowns);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
         [Authorize]
         [HttpPost]
         [Route("api/markdown/")]
@@ -89,12 +116,13 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
             try
             {
-                var updatedDocument = await markDownService.UpsertDocument(markDownModel.Body);
+                var updatedDocument = await markDownService.UpdateDocument(markDownModel.Id, markDownModel.Body);
 
-                if (updatedDocument?.MarkDown != null)
+                if (!string.IsNullOrWhiteSpace(updatedDocument?.MarkDown))
                 {
                     var updatedMarkDownModel = new MarkDownModel
                     {
+                        Id= updatedDocument.Id,
                         Body = updatedDocument.MarkDown,
                     };
                     return Ok(updatedMarkDownModel);
@@ -102,6 +130,41 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                 else
                 {
                     throw new Exception("Unable to retrieve updated document");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex);
+            }
+        }
+
+        [Authorize]
+        [HttpPut]
+        [Route("api/markdown/")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
+        public async Task<IActionResult> Put([FromBody] MarkDownModel markDownModel)
+        {
+            if (string.IsNullOrWhiteSpace(markDownModel?.Body))
+            {
+                return BadRequest("model is not OK");
+            }
+
+            try
+            {
+                var insertedDocument = await markDownService.InsertDocument(markDownModel.Body);
+
+                if (!string.IsNullOrWhiteSpace(insertedDocument?.MarkDown))
+                {
+                    var insertedMarkDownModel = new MarkDownModel
+                    {
+                        Id = insertedDocument.Id,
+                        Body = insertedDocument.MarkDown,
+                    };
+                    return Ok(insertedMarkDownModel);
+                }
+                else
+                {
+                    throw new Exception("Unable to retrieve inserted document");
                 }
             }
             catch (Exception ex)

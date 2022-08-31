@@ -14,10 +14,10 @@ namespace BlazorMarkDownAppJwt.Server.Services.Users
 
         public async Task<User?> AddUser(User addedUser)
         {
-            if (string.IsNullOrEmpty(addedUser.Email)
-                || string.IsNullOrEmpty(addedUser.Password)
-                || string.IsNullOrEmpty(addedUser.FirstName)
-                || string.IsNullOrEmpty(addedUser.LastName))
+            if (string.IsNullOrWhiteSpace(addedUser.Email)
+                || string.IsNullOrWhiteSpace(addedUser.Password)
+                || string.IsNullOrWhiteSpace(addedUser.FirstName)
+                || string.IsNullOrWhiteSpace(addedUser.LastName))
                 return null;
 
             var existingUser = await Ctx.Users.SingleOrDefaultAsync(u => u.Email == addedUser.Email);

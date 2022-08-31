@@ -1,33 +1,22 @@
-﻿@inherits LayoutComponentBase
-@using BlazorMarkDownAppJwt.Shared
+﻿@page "/markdowndetail/{currentId:long?}"
+@using BlazorMarkDownAppJwt.Client.Components
 @inject IJSRuntime jsr
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<PageTitle>MarkDown Editor</PageTitle>
 
-    <main>
-        <div class="top-row px-4">
-            @if (string.IsNullOrWhiteSpace(userMail))
-            {
-                <a href="/login">Login</a>
-				<a href="/register">Register</a>
-            } else
-            {
-				<a>Hello, @userMail</a>
-                <a href="/logout">Logout</a>
-            }
-            <a href="/about">About</a>
-        </div>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<h1>MarkDown Editor</h1>
+
+<p>Let's use incredible MarkDownEditor App!.</p>
+
+<UserComponent UserMail="@userMail"></UserComponent>
+<MarkDownComponent UserMail="@userMail" MarkDownId="@CurrentId"></MarkDownComponent>
 
 @code {
+
 	string? userMail;
+
+	[Parameter]
+	public long? CurrentId { get; set; } = null;
 
 	private async Task<string?> GetUserMail()
 	{

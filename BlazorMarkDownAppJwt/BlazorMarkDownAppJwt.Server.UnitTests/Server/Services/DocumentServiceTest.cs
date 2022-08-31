@@ -9,7 +9,6 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 {
     public class DocumentServiceTest
     {
-        private string? testDataDir { get { return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); } }
         private DataBaseContext Ctx { get; set; }
 
         private Mock<IWebHostEnvironment> WebHostEnvironmentMoq { get; set; }
@@ -33,7 +32,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             // Arrange
 
             // Act
-            var result = await Service.GetDocument();
+            var result = await Service.GetDocument(1);
 
             // Assert
             Assert.IsNull(result);
@@ -45,39 +44,20 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             // Arrange
 
             // Act
-            var result = await Service.GetDocument();
+            var result = await Service.GetDocument(1);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public void DocumentService_GetDocument_MultipleDocuments_ThrowException()
-        {
-            // Arrange
-            var document1 = new Document { Id = 1, MarkDown = "# Hello World1" };
-            var document2 = new Document { Id = 2, MarkDown = "# Hello World2" };
-            this.Ctx.Document.Add(document1);
-            this.Ctx.Document.Add(document2);
-            this.Ctx.SaveChanges();
-
-            // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(Service.GetDocument);
-
-            // Clean
-            this.Ctx.Document.Remove(document1);
-            this.Ctx.Document.Remove(document2);
-            this.Ctx.SaveChanges();
-        }
-
-        [Test]
-        public async Task DocumentService_Upsert_InsertDocument_ReturnsDocument()
+        public async Task DocumentService_InsertDocument_ReturnsDocument()
         {
             // Arrange
             var markDown = "# Hello World";
 
             // Act
-            var result = await Service.UpsertDocument(markDown);
+            var result = await Service.InsertDocument(markDown);
 
             // Assert
             Assert.IsNotNull(result);
@@ -89,7 +69,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task DocumentService_Upsert_UpdateDocument_ReturnsDocument()
+        public async Task DocumentService_UpdateDocument_ReturnsDocument()
         {
             // Arrange
             var document = new Document { Id = 1, MarkDown = "# Hello World" };
@@ -98,7 +78,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.UpsertDocument(markDownupdated);
+            var result = await Service.UpdateDocument(document.Id, markDownupdated);
 
             // Assert
             Assert.IsNotNull(result);
@@ -121,6 +101,51 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 
             // Assert
             Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task DocumentService_GetAllDocuments_ReturnsEmptyList()
+        {
+            // Arrange
+
+            // Act
+            var result = await Service.GetAllDocuments();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task DocumentService_GetAllDocuments_ReturnsList()
+        {
+            // Arrange
+            var document1 = new Document
+            {
+                Id = 1,
+                MarkDown = "# Markdown1",
+            };
+
+            var document2 = new Document
+            {
+                Id = 2,
+                MarkDown = "# Markdown2",
+            };
+            this.Ctx.Document.Add(document1);
+            this.Ctx.Document.Add(document2);
+            this.Ctx.SaveChanges();
+
+            // Act
+            var result = await Service.GetAllDocuments();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Count, Is.EqualTo(2));
+
+            // Clean
+            this.Ctx.Document.Remove(document1);
+            this.Ctx.Document.Remove(document2);
+            this.Ctx.SaveChanges();
         }
 
 
