@@ -1,105 +1,63 @@
-﻿# Title / Repository Name
+﻿# MarkDown Editor  With Blazor Web Assembly
 
-## About / Synopsis
+<a href="https://docs.microsoft.com/fr-fr/aspnet/core/blazor/?view=aspnetcore-6.0"><img src="https://docs.microsoft.com/fr-fr/aspnet/core/blazor/index/_static/blazor-webassembly.png?view=aspnetcore-6.0" alt="Blazor WebAssembly" height="256px" align="right"></a>
 
-* What is it, what does it do / Abstract
-* Project status: working/prototype
-* Nuxeo Support
+**That project is to present you how to build Blazor Web Assembly WebSite using .Net 6.0. The topic is to be able to make an online markdown editor (display and edit mode)**
 
-See real examples:
+## About The Project.
+Blazor WebAssembly makes it possible to run C# code on the browser without having to use JavaScript, and does not rely on plugins or add-ons. The only technical requirement for using Blazor WebAssembly is to work with a browser that supports WebAssembly which, as of today, all modern browsers do.
 
-* <https://github.com/nuxeo/nuxeo/blob/master/README.md>
-* <https://github.com/nuxeo/nuxeo-drive/blob/master/README.md>
-* <https://github.com/nuxeo/nuxeo-sdk-ios/blob/master/README.md>
+This project allows me to accomplish the following points : 
+* Build from scratch my first Blazor WebAssembly application, using the Blazor WebAssembly App project template.
+* Discover all the mechanism to be able to call REST APIS from Blazor components
+* Implement JWT authentication.
+* Store datas in a sqlLite database.
 
-## Table of contents
+## What You Need?.
+**Development Tool**
+ * [Visual Studio 2022](https://visualstudio.microsoft.com/)
 
-Use for instance <https://github.com/ekalinin/github-markdown-toc>:
+**Nuggets Installed**
+ * [Microsoft.EntityFrameworkCore.Sqlite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite/6.0.8?_src=template)
+ * [Microsoft.AspNetCore.Authentication.JwtBearer ](https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.JwtBearer/6.0.8?_src=template)
+* [Markdig](https://www.nuget.org/packages/Markdig/0.30.3?_src=template)
+* [NUnit](https://www.nuget.org/packages/NUnit/3.13.3?_src=template)
+* [Moq](https://www.nuget.org/packages/Moq/4.18.2?_src=template)
+* [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/13.0.1?_src=template)
 
-> * [Title / Repository Name](#title--repository-name)
->   * [About / Synopsis](#about--synopsis)
->   * [Table of contents](#table-of-contents)
->   * [Installation](#installation)
->   * [Usage](#usage)
->     * [Screenshots](#screenshots)
->     * [Features](#features)
->   * [Code](#code)
->     * [Content](#content)
->     * [Requirements](#requirements)
->     * [Limitations](#limitations)
->     * [Build](#build)
->     * [Deploy (how to install build product)](#deploy-how-to-install-build-product)
->   * [Resources (Documentation and other links)](#resources-documentation-and-other-links)
->   * [Contributing / Reporting issues](#contributing--reporting-issues)
->   * [License](#license)
->   * [About Nuxeo](#about-nuxeo)
 
-## Installation
+## Usefull Links.
+**asp.net core 6**
+* [Microsoft Documentation](https://docs.microsoft.com/fr-fr/aspnet/core/?view=aspnetcore-6.0)
 
-Sample:
+**JWT Token authentication - in Blazor**
+* [Youtube video](https://www.youtube.com/watch?v=bu6F4oeYdzA)
+* [prowaretech Article](https://www.prowaretech.com/articles/current/blazor/wasm/jwt-authentication-simple)
 
-* From the Nuxeo Marketplace: install [the Sample Nuxeo Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-sample).
-* From the command line: `nuxeoctl mp-install nuxeo-sample`
 
-## Usage
+**Markdown editor With Markdig Nuget**
+* [jonhilton](https://jonhilton.net/blazor-markdown-editor/)
 
-### Screenshots
+**Sqlite, DbContext and EF Core**
+* [thinktecture](https://www.thinktecture.com/en/blazor/ef-core-and-sqlite-in-browser/)
+* [stackoverflow](https://stackoverflow.com/questions/67966259/why-is-it-not-possible-to-use-sqlite-in-blazor-webassembly)
+* [reddit](https://www.reddit.com/r/Blazor/comments/rhrwxa/blazor_webassembly_sqlite/)
+* [EF Core Microsoft Documentation](https://docs.microsoft.com/fr-fr/ef/core/get-started/overview/first-app?tabs=netcore-cli)
+* [EF Core DbContext Configuration](https://docs.microsoft.com/fr-fr/ef/core/dbcontext-configuration/)
+* [Configuration for Unit tests](https://dotnetthoughts.net/how-to-mock-dbcontext-for-unit-testing/)
+* [stackoverflow Mock DBContext](https://stackoverflow.com/questions/54219742/mocking-ef-core-dbcontext-and-dbset)
 
-### Features
+## About Me.
 
-## Code
+**Hi 👋, I'm Clement Alexandre Fullstack Engineer**
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=/nuxeo/addons_nuxeo-sample-project-master)](https://qa.nuxeo.org/jenkins/job/nuxeo/job/addons_nuxeo-sample-project-master/)
+**🌱 I’m currently learning **Blazor Web assembly****
 
-### Content
+### Connect with me:
 
-Description, sub-modules organization...
+<p align="left"><a href="https://fr.linkedin.com/in/cl%C3%A9ment-alexandre-aa76b565" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="clément-alexandre-aa76b565" height="30" width="40" /></a><a href="https://github.com/clemalex06" target="blank"><img align="center" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="30" width="40" /></a></p>
 
-### Requirements
 
-See [CORG/Compiling Nuxeo from sources](http://doc.nuxeo.com/x/xION)
+### Languages and Tools:
+<p align="left"><a href="https://getbootstrap.com" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg" alt="bootstrap" width="40" height="40"/></a> <a href="https://www.w3schools.com/cs/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg" alt="csharp" width="40" height="40"/> </a> <a href="https://dotnet.microsoft.com/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/dot-net/dot-net-original-wordmark.svg" alt="dotnet" width="40" height="40"/> </a> <a href="https://git-scm.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/> </a></p>
 
-Sample: <https://github.com/nuxeo/nuxeo/blob/master/nuxeo-distribution/README.md>
-
-### Limitations
-
-Sample: <https://github.com/nuxeo-archives/nuxeo-features/tree/master/nuxeo-elasticsearch>
-
-### Build
-
-    mvn clean install
-
-Build options:
-
-* ...
-
-### Deploy (how to install build product)
-
-Direct to MP package if any. Otherwise provide steps to deploy on Nuxeo Platform:
-
- > Copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the `custom` template.
-
-## Resources (Documentation and other links)
-
-## Contributing / Reporting issues
-
-Link to JIRA component (or project if there is no component for that project). Samples:
-
-* [Link to component](https://jira.nuxeo.com/issues/?jql=project%20%3D%20NXP%20AND%20component%20%3D%20Elasticsearch%20AND%20Status%20!%3D%20%22Resolved%22%20ORDER%20BY%20updated%20DESC%2C%20priority%20DESC%2C%20created%20ASC)
-* [Link to project](https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXP)
-
-## License
-
-[Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
-
-## About Nuxeo
-
-Nuxeo Platform is an open source Content Services platform, written in Java. Data can be stored in both SQL & NoSQL databases.
-
-The development of the Nuxeo Platform is mostly done by Nuxeo employees with an open development model.
-
-The source code, documentation, roadmap, issue tracker, testing, benchmarks are all public.
-
-Typically, Nuxeo users build different types of information management solutions for [document management](https://www.nuxeo.com/solutions/document-management/), [case management](https://www.nuxeo.com/solutions/case-management/), and [digital asset management](https://www.nuxeo.com/solutions/dam-digital-asset-management/), use cases. It uses schema-flexible metadata & content models that allows content to be repurposed to fulfill future use cases.
-
-More information is available at [www.nuxeo.com](https://www.nuxeo.com).

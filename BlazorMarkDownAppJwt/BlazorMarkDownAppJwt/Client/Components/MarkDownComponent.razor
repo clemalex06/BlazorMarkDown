@@ -10,7 +10,7 @@
 {
 	<div class="spinner"></div>
 }
-else if (MarkDownId != null && MarkDownId != 0)
+else if (MarkDownId != null && MarkDownId != 0  && displayEditor)
 {
 	<div class="row">
 		@if (!string.IsNullOrWhiteSpace(successMessage))
@@ -32,8 +32,8 @@ else if (MarkDownId != null && MarkDownId != 0)
 			@if (!string.IsNullOrWhiteSpace(UserMail))
 			{
 				<div class="mb-3 text-right">
-					<button class="btn btn-success" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Update MarkDown</button>
-					<button class="btn btn-success" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Create New MarkDown</button>
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Update MarkDown</button>
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Create New MarkDown</button>
 				</div>
 				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
 			}
@@ -49,8 +49,9 @@ else if (MarkDownId != null && MarkDownId != 0)
 				@if (!string.IsNullOrWhiteSpace(UserMail))
 				{
 					<div class="mb-3 text-right">
-						<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
-						<button class="btn btn-primary" @onclick="()=>CheckPreview(false)">View Html generated</button>
+						<button class="btn btn-primary btn-margin" @onclick="ReloadPreview">Reload Preview</button>
+						<button class="btn btn-primary btn-margin" @onclick="()=>CheckPreview(false)">View Html generated</button>
+						<button class="btn btn-primary btn-margin" @onclick="()=>DisplayEditor(false)">Hide Editor</button>
 					</div>
 				}
 				<div>@markupString</div>
@@ -75,7 +76,18 @@ else if (MarkDownId != null && MarkDownId != 0)
 else
 {
 	<div class="col-6">
-		<h3>README</h3>
+		
+		@if (!displayEditor)
+		{
+			<h3>MarkDown @MarkDownId : Editor</h3>
+			<div class="mb-3 text-right">
+				<button class="btn btn-primary btn-margin" @onclick="()=>DisplayEditor(true)">Display Editor</button>
+			</div>
+		}
+		else
+		{
+			<h3>README</h3>
+		}
 		<div>@markupString</div>
 	</div>
 }
@@ -88,14 +100,14 @@ else
 	[Parameter]
 	public long? MarkDownId { get; set; }
 
-	private bool isLoading = true;
-
 	private MarkupString markupString;
 
 	private string successMessage = string.Empty;
 	private string errorMessage = string.Empty;
 
+	private bool isLoading = true;
 	private bool checkPreview = true;
+	private bool displayEditor = true;
 
 	private MarkDownModel markDownModel = new MarkDownModel
 	{
@@ -153,6 +165,11 @@ else
 	private void CheckPreview(bool val)
 	{
 		checkPreview = val;
+	}
+
+	private void DisplayEditor(bool val)
+	{
+		displayEditor = val;
 	}
 
 	private async Task UpsertMarkDown(HttpMethod method)
