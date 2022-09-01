@@ -53,8 +53,6 @@ This project allows me to accomplish the following points :
 
 **🌱 I’m currently learning **Blazor Web assembly****
 
-- 👨‍💻 All of my projects are available at [https://github.com/clemalex06/clemalex06.github.io](https://github.com/clemalex06/clemalex06.github.io)
-
 ### Connect with me:
 
 <p align="left"><a href="https://fr.linkedin.com/in/cl%C3%A9ment-alexandre-aa76b565" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="clément-alexandre-aa76b565" height="30" width="40" /></a><a href="https://github.com/clemalex06" target="blank"><img align="center" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="30" width="40" /></a></p>
