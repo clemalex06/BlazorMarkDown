@@ -9,17 +9,16 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
     [ApiController]
     public class MarkDownController : Controller
     {
-        private IDocumentService markDownService { get; }
+        private IDocumentService MarkDownService { get; }
 
         public MarkDownController(IDocumentService markDownService)
         {
-            this.markDownService = markDownService;
+            this.MarkDownService = markDownService;
         }
 
         [HttpGet]
         [Route("api/markdown")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> Get([FromQuery] long currentId)
+        public async Task<ActionResult<MarkDownModel>> GetAsync([FromQuery] long currentId, CancellationToken cancellationToken)
         {
             try
             {
@@ -29,14 +28,15 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     Body = string.Empty,
                 };
 
-                var document = await markDownService.GetDocument(currentId);
+                var document = await MarkDownService.GetDocumentAsync(currentId, cancellationToken);
 
-                if (!string.IsNullOrWhiteSpace(document?.MarkDown))
+                if (document == null)
                 {
-
-                    markDownModel.Body = document.MarkDown;
-                    markDownModel.Id = document.Id;
+                    return NotFound();
                 }
+
+                markDownModel.Body = document.MarkDown;
+                markDownModel.Id = document.Id;
 
                 return Ok(markDownModel);
             }
@@ -49,8 +49,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
         [HttpGet]
         [Route("api/markdown/readme/")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> GetReadMe()
+        public async Task<ActionResult<MarkDownModel>> GetReadMeAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -60,13 +59,14 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     Body = string.Empty,
                 };
 
-                var document = await markDownService.GetReadMeDocument();
+                var document = await MarkDownService.GetReadMeDocumentAsync(cancellationToken);
 
-                if (document?.MarkDown != null)
+                if (document == null)
                 {
-
-                    markDownModel.Body = document.MarkDown;
+                    return NotFound();
                 }
+
+                markDownModel.Body = document.MarkDown;
 
                 return Ok(markDownModel);
             }
@@ -80,12 +80,11 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [HttpGet]
         [Route("api/markdowns/")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MarkDownModel>))]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<List<MarkDownModel>>> GetAllAsync(CancellationToken cancellationToken)
         {
             try
             {
-
-                var documents = await markDownService.GetAllDocuments();
+                var documents = await MarkDownService.GetAllDocumentsAsync(cancellationToken);
 
                 var markdowns = documents?.Select(d => new MarkDownModel
                 {
@@ -106,8 +105,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [Authorize]
         [HttpPost]
         [Route("api/markdown/")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> Post([FromBody] MarkDownModel markDownModel)
+        public async Task<ActionResult<MarkDownModel>> PostAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(markDownModel?.Body))
             {
@@ -116,21 +114,15 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
             try
             {
-                var updatedDocument = await markDownService.UpdateDocument(markDownModel.Id, markDownModel.Body);
+                
+                var updatedDocument = await MarkDownService.UpdateDocumentAsync(markDownModel.Id, markDownModel.Body, cancellationToken);
 
-                if (!string.IsNullOrWhiteSpace(updatedDocument?.MarkDown))
+                var updatedMarkDownModel = new MarkDownModel
                 {
-                    var updatedMarkDownModel = new MarkDownModel
-                    {
-                        Id= updatedDocument.Id,
-                        Body = updatedDocument.MarkDown,
-                    };
-                    return Ok(updatedMarkDownModel);
-                }
-                else
-                {
-                    throw new Exception("Unable to retrieve updated document");
-                }
+                    Id = updatedDocument.Id,
+                    Body = updatedDocument.MarkDown,
+                };
+                return Ok(updatedMarkDownModel);
             }
             catch (Exception ex)
             {
@@ -142,7 +134,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         [HttpPut]
         [Route("api/markdown/")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<IActionResult> Put([FromBody] MarkDownModel markDownModel)
+        public async Task<ActionResult<MarkDownModel>> PutAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(markDownModel?.Body))
             {
@@ -151,21 +143,14 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
             try
             {
-                var insertedDocument = await markDownService.InsertDocument(markDownModel.Body);
+                var insertedDocument = await MarkDownService.InsertDocumentAsync(markDownModel.Body, cancellationToken);
 
-                if (!string.IsNullOrWhiteSpace(insertedDocument?.MarkDown))
+                var insertedMarkDownModel = new MarkDownModel
                 {
-                    var insertedMarkDownModel = new MarkDownModel
-                    {
-                        Id = insertedDocument.Id,
-                        Body = insertedDocument.MarkDown,
-                    };
-                    return Ok(insertedMarkDownModel);
-                }
-                else
-                {
-                    throw new Exception("Unable to retrieve inserted document");
-                }
+                    Id = insertedDocument.Id,
+                    Body = insertedDocument.MarkDown,
+                };
+                return Ok(insertedMarkDownModel);
             }
             catch (Exception ex)
             {

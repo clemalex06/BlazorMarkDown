@@ -1,5 +1,4 @@
-﻿// AuthModel.cs
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BlazorMarkDownAppJwt.Shared
 {
@@ -14,7 +13,7 @@ namespace BlazorMarkDownAppJwt.Shared
 	{
 		[Required(ErrorMessage = "Email is required.")]
 		[EmailAddress(ErrorMessage = "Email address is not valid.")]
-		public string? email { get; set; } // NOTE: email will be the username, too
+		public string? email { get; set; }
 
 		[Required(ErrorMessage = "Password is required.")]
 		[DataType(DataType.Password)]
@@ -23,10 +22,10 @@ namespace BlazorMarkDownAppJwt.Shared
 	public class RegModel : LoginModel
 	{
 		[Required(ErrorMessage = "First Name is required.")]
-		public string? firstName { get; set; } // NOTE: for the moment not used
+		public string? firstName { get; set; }
 
 		[Required(ErrorMessage = "Last Name is required.")]
-		public string? lastName { get; set; } // NOTE: for the moment not used
+		public string? lastName { get; set; }
 
 		[Required(ErrorMessage = "Confirm password is required.")]
 		[DataType(DataType.Password)]

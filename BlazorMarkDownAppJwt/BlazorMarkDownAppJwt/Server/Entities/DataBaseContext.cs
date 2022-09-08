@@ -9,7 +9,7 @@ namespace BlazorMarkDownAppJwt.Server.Entities
         {
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Document> Document { get; set; }
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Document> Document => Set<Document>();
     }
 }

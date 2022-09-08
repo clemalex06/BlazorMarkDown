@@ -45,7 +45,7 @@ else
 
 @code {
 	RegModel reg = new RegModel();
-	string message = string.Empty, login = string.Empty;
+	string? message = string.Empty, login = string.Empty;
 	bool isDisabled = false;
 
 	private async Task OnValid()
@@ -57,9 +57,9 @@ else
 			{
 				if (msg.IsSuccessStatusCode)
 				{
-					LoginResult result = await msg.Content.ReadFromJsonAsync<LoginResult>();
-					message = result.message;
-					if (result.success)
+					LoginResult? result = await msg.Content.ReadFromJsonAsync<LoginResult>();
+					message = result?.message;
+					if (result != null && result.success)
 					{
 						message += " Please LOGIN to continue.";
 						login = "Click here to LOGIN.";

@@ -7,8 +7,16 @@ namespace BlazorMarkDownAppJwt.Shared
     {
         public long Id { get; set; }
 
-        public string Body { get; set; }
+        public string? Body { get; set; }
 
-        public string Html { get { return Markdown.ToHtml(Body); } }
+        public string Html
+        {
+            get
+            {
+                if (Body != null)
+                    return Markdown.ToHtml(Body);
+                return string.Empty;
+            }
+        }
     }
 }

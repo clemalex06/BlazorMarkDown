@@ -4,14 +4,14 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
 {
     public interface IDocumentService
     {
-        Task<Document?> GetDocument(long id);
+        Task<Document?> GetDocumentAsync(long id, CancellationToken cancellationToken);
 
-        Task<List<Document>> GetAllDocuments();
+        Task<List<Document>> GetAllDocumentsAsync(CancellationToken cancellationToken);
 
-        Task<Document?> InsertDocument(string markDown);
+        Task<Document> InsertDocumentAsync(string markDown, CancellationToken cancellationToken);
 
-        Task<Document?> UpdateDocument(long id, string markDown);
+        Task<Document> UpdateDocumentAsync(long id, string markDown, CancellationToken cancellationToken);
 
-        Task<Document?> GetReadMeDocument();
+        Task<Document?> GetReadMeDocumentAsync(CancellationToken cancellationToken);
     }
 }

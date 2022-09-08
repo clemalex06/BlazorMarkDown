@@ -41,7 +41,7 @@ else
 
 @code {
 	LoginModel user = new LoginModel();
-	string message = string.Empty;
+	string? message = string.Empty;
 	bool isDisabled = false;
 
 	private async Task OnValid()
@@ -53,10 +53,10 @@ else
 			{
 				if (msg.IsSuccessStatusCode)
 				{
-					LoginResult result = await msg.Content.ReadFromJsonAsync<LoginResult>();
-					message = result.message;
+					LoginResult? result = await msg.Content.ReadFromJsonAsync<LoginResult>();
+					message = result?.message;
 
-					if (result.success)
+					if (result != null && result.success)
 					{
 						await jsr.InvokeVoidAsync("localStorage.setItem", "user", $"{result.email};{result.jwtBearer}").ConfigureAwait(false);
 						nav.NavigateTo("/", true);

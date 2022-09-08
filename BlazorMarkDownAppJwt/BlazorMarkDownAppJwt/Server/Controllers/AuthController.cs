@@ -5,44 +5,25 @@ using System.Security.Claims;
 using BlazorMarkDownAppJwt.Shared;
 using BlazorMarkDownAppJwt.Server.Entities;
 using BlazorMarkDownAppJwt.Server.Services.Users;
+using BlazorMarkDownAppJwt.Server.Helpers;
 
 namespace BlazorMarkDownAppJwt.Server.Controllers
 {
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private string? CreateJWT(User user)
-        {
-            var secretkey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("THIS IS THE SECRET KEY")); // NOTE: SAME KEY AS USED IN Program.cs FILE
-            var credentials = new SigningCredentials(secretkey, SecurityAlgorithms.HmacSha256);
 
-            if (!string.IsNullOrWhiteSpace(user.Email))
-            {
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, user.Email)
-            };
 
-                var token = new JwtSecurityToken(issuer: "domain.com", audience: "domain.com", claims: claims, expires: DateTime.Now.AddMinutes(10), signingCredentials: credentials);
-                return new JwtSecurityTokenHandler().WriteToken(token);
-            }
-
-            return null;
-        }
-
-        private IUserService userService { get; }
+        private IUserService UserService { get; }
 
         public AuthController(IUserService userService)
         {
-            this.userService = userService;
+            this.UserService = userService;
         }
 
         [HttpPost]
         [Route("api/auth/register")]
-        public async Task<LoginResult> Post([FromBody] RegModel reg)
+        public async Task<LoginResult> PostAsync([FromBody] RegModel reg, CancellationToken cancellationToken)
         {
             try
             {
@@ -56,9 +37,9 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
                     LastName = reg.lastName,
 
                 };
-                User? newuser = await userService.AddUser(regUser);
+                User? newuser = await UserService.AddUserAsync(regUser, cancellationToken);
                 if (newuser != null)
-                    return new LoginResult { message = "Registration successful.", jwtBearer = CreateJWT(newuser), email = reg.email, success = true };
+                    return new LoginResult { message = "Registration successful.", jwtBearer = JWTHelper.CreateJWT(newuser), email = reg.email, success = true };
                 return new LoginResult { message = "User already exists.", success = false };
 
             }
@@ -70,13 +51,13 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
         [HttpPost]
         [Route("api/auth/login")]
-        public async Task<LoginResult> Post([FromBody] LoginModel log)
+        public async Task<LoginResult> PostAsync([FromBody] LoginModel log, CancellationToken cancellationToken)
         {
             try
             {
-                User? user = await userService.AuthenticateUser(log.email, log.password);
+                User? user = await UserService.AuthenticateUserAsync(log.email, log.password, cancellationToken);
                 if (user != null)
-                    return new LoginResult { message = "Login successful.", jwtBearer = CreateJWT(user), email = log.email, success = true };
+                    return new LoginResult { message = "Login successful.", jwtBearer = JWTHelper.CreateJWT(user), email = log.email, success = true };
                 return new LoginResult { message = "User/password not found.", success = false };
             }
             catch (Exception ex)

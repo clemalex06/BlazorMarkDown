@@ -37,9 +37,9 @@ else {
 
 @code {
 	private bool isLoading = false;
-	private List<MarkDownModel> markDowns;
+	private List<MarkDownModel> markDowns = new List<MarkDownModel>();
 
-		protected override async Task OnInitializedAsync()
+	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		isLoading = true;
@@ -50,7 +50,11 @@ else {
 			var response = await HttpClient.SendAsync(requestMsg);
 			if (response.IsSuccessStatusCode)
 			{
-				markDowns = await response.Content.ReadFromJsonAsync<List<MarkDownModel>>();
+				var content = await response.Content.ReadFromJsonAsync<List<MarkDownModel>>();
+				if (content != null)
+				{
+					markDowns = content;
+				}
 			}
 		}
 		catch (Exception)

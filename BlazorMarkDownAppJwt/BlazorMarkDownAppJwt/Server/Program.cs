@@ -9,6 +9,7 @@ using BlazorMarkDownAppJwt.Server.Services.Users;
 using BlazorMarkDownAppJwt.Server.Services.MarkDowns;
 using BlazorMarkDownAppJwt.Server.Entities;
 using Microsoft.EntityFrameworkCore;
+using BlazorMarkDownAppJwt.Server.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath, "Datas\\test_fullstack.db");
 
-// Add services to the container.
 builder.Services.AddDbContext<DataBaseContext>(options => options.UseSqlite($"Data Source={dbPath}"));
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IDocumentService, DocumentService>();
 
-// NOTE: the following block of code is newly added
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
 	options.TokenValidationParameters = new TokenValidationParameters
@@ -32,7 +31,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 		ValidIssuer = "domain.com",
 		ValidateLifetime = true,
 		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("THIS IS THE SECRET KEY")) // NOTE: THIS SHOULD BE A SECRET KEY NOT TO BE SHARED; A GUID IS RECOMMENDED
+		IssuerSigningKey = JWTHelper.GetSecretKey()
 	};
 });
 // NOTE: end block

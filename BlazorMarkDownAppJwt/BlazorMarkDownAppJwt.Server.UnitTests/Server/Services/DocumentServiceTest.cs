@@ -15,49 +15,52 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 
         private DocumentService Service { get; set; }
 
+        private CancellationToken CancellationToken { get; set; }
+
 
         [SetUp]
         public void Setup()
         {
             var options = new DbContextOptionsBuilder().UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
-            this.Ctx = new DataBaseContext(options);
+            Ctx = new DataBaseContext(options);
 
-            this.WebHostEnvironmentMoq = new Mock<IWebHostEnvironment>();
-            this.Service = new DocumentService(this.Ctx, this.WebHostEnvironmentMoq.Object);
+            WebHostEnvironmentMoq = new Mock<IWebHostEnvironment>();
+            Service = new DocumentService(this.Ctx, this.WebHostEnvironmentMoq.Object);
+            CancellationToken = new CancellationToken();
         }
 
         [Test]
-        public async Task DocumentService_GetDocument_ReturnsNull()
+        public async Task DocumentService_GetDocumentAsync_ReturnsNull()
         {
             // Arrange
 
             // Act
-            var result = await Service.GetDocument(1);
+            var result = await Service.GetDocumentAsync(1, CancellationToken);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task DocumentService_GetDocument_ReturnsDocument()
+        public async Task DocumentService_GetDocumentAsync_ReturnsDocument()
         {
             // Arrange
 
             // Act
-            var result = await Service.GetDocument(1);
+            var result = await Service.GetDocumentAsync(1, CancellationToken);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task DocumentService_InsertDocument_ReturnsDocument()
+        public async Task DocumentService_InsertDocumentAsync_ReturnsDocument()
         {
             // Arrange
             var markDown = "# Hello World";
 
             // Act
-            var result = await Service.InsertDocument(markDown);
+            var result = await Service.InsertDocumentAsync(markDown, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -69,7 +72,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task DocumentService_UpdateDocument_ReturnsDocument()
+        public async Task DocumentService_UpdateDocumentAsync_ReturnsDocument()
         {
             // Arrange
             var document = new Document { Id = 1, MarkDown = "# Hello World" };
@@ -78,7 +81,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.UpdateDocument(document.Id, markDownupdated);
+            var result = await Service.UpdateDocumentAsync(document.Id, markDownupdated, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -90,26 +93,45 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task DocumentService_GetReadMeDocument_ReturnsNull()
+        public void DocumentService_UpdateDocumentAsync_ThrowException()
         {
             // Arrange
-            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).ToString();
-            this.WebHostEnvironmentMoq.Setup(w => w.ContentRootPath).Returns(path);
+            long id = 1;
+            var markDownupdated = "# Hello World updated";
+
+            // Act & Assert
+            Exception ex = Assert.ThrowsAsync<Exception>(async () => await Service.UpdateDocumentAsync(
+                id,
+                markDownupdated,
+                CancellationToken));
+
+            // Assert
+            Assert.That(ex.Message, Is.EqualTo($"unable to find document with id = {id}"));
+        }
+
+        [Test]
+        public async Task DocumentService_GetReadMeDocumentAsync_ReturnsNull()
+        {
+            // Arrange
+            string location = Assembly.GetExecutingAssembly().Location;
+            var directoryName = Path.GetDirectoryName(location);
+            if (!string.IsNullOrWhiteSpace(directoryName))
+                WebHostEnvironmentMoq.Setup(w => w.ContentRootPath).Returns(directoryName);
 
             // Act
-            var result = await Service.GetReadMeDocument();
+            var result = await Service.GetReadMeDocumentAsync(CancellationToken);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task DocumentService_GetAllDocuments_ReturnsEmptyList()
+        public async Task DocumentService_GetAllDocumentsAsync_ReturnsEmptyList()
         {
             // Arrange
 
             // Act
-            var result = await Service.GetAllDocuments();
+            var result = await Service.GetAllDocumentsAsync(CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -117,7 +139,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task DocumentService_GetAllDocuments_ReturnsList()
+        public async Task DocumentService_GetAllDocumentsAsync_ReturnsList()
         {
             // Arrange
             var document1 = new Document
@@ -136,7 +158,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.GetAllDocuments();
+            var result = await Service.GetAllDocumentsAsync(CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);

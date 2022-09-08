@@ -4,6 +4,6 @@
     {
         public long Id { get; set; }
 
-        public string MarkDown { get; set; }
+        public string? MarkDown { get; set; }
     }
 }

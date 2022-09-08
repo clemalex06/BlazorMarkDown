@@ -10,30 +10,33 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 
         private UserService Service { get; set; }
 
+        private CancellationToken CancellationToken { get; set; }
+
         [SetUp]
         public void Setup()
         {
             var options = new DbContextOptionsBuilder().UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
-            this.Ctx = new DataBaseContext(options);
-            this.Service = new UserService(this.Ctx);
+            Ctx = new DataBaseContext(options);
+            Service = new UserService(this.Ctx);
+            CancellationToken = new CancellationToken();
         }
 
         [Test]
-        public async Task UserService_AuthenticateUser_ReturnsNull()
+        public async Task UserService_AuthenticateUserAsync_ReturnsNull()
         {
             // Arrange
             var email = "email";
             var password = "password";
 
             // Act
-            var result = await Service.AuthenticateUser(email, password);
+            var result = await Service.AuthenticateUserAsync(email, password, CancellationToken);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task UserService_AuthenticateUser_ReturnsUser()
+        public async Task UserService_AuthenticateUserAsync_ReturnsUser()
         {
             // Arrange
             var email = "email";
@@ -43,7 +46,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.AuthenticateUser(email, password);
+            var result = await Service.AuthenticateUserAsync(email, password, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -55,7 +58,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task UserService_AddUser_ReturnsUser()
+        public async Task UserService_AddUserAsync_ReturnsUser()
         {
             // Arrange
             var email = "email";
@@ -66,7 +69,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             { Email = email, Password = password, FirstName = firstName, LastName = lastName };
 
             // Act
-            var result = await Service.AddUser(newUser);
+            var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -78,7 +81,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task UserService_AddUser_UserAlreadyExist_ReturnsNull()
+        public async Task UserService_AddUserAsync_UserAlreadyExist_ReturnsNull()
         {
             // Arrange
             var email = "email";
@@ -91,7 +94,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             this.Ctx.SaveChanges();
 
             // Act
-            var result = await Service.AddUser(newUser);
+            var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
             Assert.IsNull(result);
@@ -102,7 +105,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
         }
 
         [Test]
-        public async Task UserService_AddUser_UserHaveEmptyInputs_ReturnsNull(
+        public async Task UserService_AddUserAsync_UserHaveEmptyInputs_ReturnsNull(
             [Values("email", "password", "firstName", "lastName")] string param1)
         {
             // Arrange
@@ -133,7 +136,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             { Email = email, Password = password, FirstName = firstName, LastName = lastName };
 
             // Act
-            var result = await Service.AddUser(newUser);
+            var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
             Assert.IsNull(result);

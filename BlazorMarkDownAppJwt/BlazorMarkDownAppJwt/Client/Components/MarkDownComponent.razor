@@ -213,7 +213,12 @@ else
 
 	private async Task SetSuccess(HttpResponseMessage response, string message)
 	{
-		markDownModel = await response.Content.ReadFromJsonAsync<MarkDownModel>();
+
+		var content= await response.Content.ReadFromJsonAsync<MarkDownModel>();
+		if (content != null)
+		{
+			markDownModel = content;
+		}
 		markupString = (MarkupString)markDownModel.Html;
 		MarkDownId = markDownModel.Id;
 		successMessage = message;
@@ -221,11 +226,6 @@ else
 
 	private void SetError(string message)
 	{
-		markDownModel = new MarkDownModel
-		{
-			Id = -1,
-			Body = string.Empty
-		};
 		markupString = (MarkupString)markDownModel.Html;
 		MarkDownId = markDownModel.Id;
 		errorMessage = message;

@@ -18,26 +18,26 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
             this.ctx = ctx;
             this.env = env;
         }
-        public async Task<Document?> GetDocument(long id)
+        public async Task<Document?> GetDocumentAsync(long id, CancellationToken cancellationToken)
         {
-            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id);
+            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
             return document;
         }
 
-        public async Task<Document?> InsertDocument(string markDown)
+        public async Task<Document> InsertDocumentAsync(string markDown, CancellationToken cancellationToken)
         {
-            var document = new Document
+            Document document = new Document
             {
                 MarkDown = markDown
             };
             ctx.Add(document);
 
-            await ctx.SaveChangesAsync();
+            await ctx.SaveChangesAsync(cancellationToken);
 
             return document;
         }
 
-        public async Task<Document?> GetReadMeDocument()
+        public async Task<Document?> GetReadMeDocumentAsync(CancellationToken cancellationToken)
         {
             var path = Path.Combine(env.ContentRootPath, documentPath);
             if (!Directory.Exists(path))
@@ -48,24 +48,27 @@ namespace BlazorMarkDownAppJwt.Server.Services.MarkDowns
             return new Document
             {
                 Id = 0,
-                MarkDown = await File.ReadAllTextAsync(path),
+                MarkDown = await File.ReadAllTextAsync(path, cancellationToken),
             };
         }
 
-        public async Task<List<Document>> GetAllDocuments()
+        public async Task<List<Document>> GetAllDocumentsAsync(CancellationToken cancellationToken)
         {
-            return await ctx.Document.ToListAsync();
+            var result = await ctx.Document.ToListAsync(cancellationToken);
+            return result;
         }
 
-		public async Task<Document?> UpdateDocument(long id, string markDown)
-		{
-            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<Document> UpdateDocumentAsync(long id, string markDown, CancellationToken cancellationToken)
+        {
+            var document = await ctx.Document.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
             if (document != null)
             {
                 document.MarkDown = markDown;
-                await ctx.SaveChangesAsync();
+                await ctx.SaveChangesAsync(cancellationToken);
+                return document;
             }
-            return document;
+            throw new Exception($"unable to find document with id = {id}");
+
         }
-	}
+    }
 }

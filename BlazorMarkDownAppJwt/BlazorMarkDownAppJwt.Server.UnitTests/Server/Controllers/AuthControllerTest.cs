@@ -12,12 +12,15 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
 
         private AuthController Controller { get; set; }
 
+        private CancellationToken CancellationToken { get; set; }
+
 
         [SetUp]
         public void Setup()
         {
             UserServiceMoq = new Mock<IUserService>();
             Controller = new AuthController(UserServiceMoq.Object);
+            CancellationToken = new CancellationToken();
         }
 
         [Test]
@@ -34,7 +37,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -53,10 +56,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 password = "password",
                 confirmpwd = "password",
             };
-            UserServiceMoq.Setup(p => p.AddUser(It.IsAny<User>())).ReturnsAsync((User?)null);
+            UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ReturnsAsync((User?)null);
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -75,7 +78,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 password = "password",
                 confirmpwd = "password",
             };
-            UserServiceMoq.Setup(p => p.AddUser(It.IsAny<User>())).ReturnsAsync(new User 
+            UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ReturnsAsync(new User
             {
                 Email = model.email,
                 FirstName = model.firstName,
@@ -85,7 +88,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             });
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -106,10 +109,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
             var exceptionMessage = "exception raised by service";
 
-            UserServiceMoq.Setup(p => p.AddUser(It.IsAny<User>())).ThrowsAsync(new Exception(exceptionMessage));
+            UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ThrowsAsync(new Exception(exceptionMessage));
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -129,7 +132,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var firstName = "firstName";
             var lastName = "lastName";
 
-            UserServiceMoq.Setup(p => p.AuthenticateUser(model.email, model.password)).ReturnsAsync(new User
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ReturnsAsync(new User
             {
                 Email = model.email,
                 FirstName = firstName,
@@ -139,7 +142,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             });
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -156,10 +159,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 password = "password",
             };
 
-            UserServiceMoq.Setup(p => p.AuthenticateUser(model.email, model.password)).ReturnsAsync((User?) null);
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ReturnsAsync((User?)null);
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);
@@ -177,10 +180,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
             var exceptionMessage = "exception raised by service";
 
-            UserServiceMoq.Setup(p => p.AuthenticateUser(model.email, model.password)).ThrowsAsync(new Exception(exceptionMessage));
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ThrowsAsync(new Exception(exceptionMessage));
 
             // Act
-            var result = await Controller.Post(model);
+            var result = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
             Assert.IsNotNull(result);

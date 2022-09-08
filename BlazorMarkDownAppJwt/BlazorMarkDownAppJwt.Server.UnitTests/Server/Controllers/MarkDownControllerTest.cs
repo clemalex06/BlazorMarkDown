@@ -14,15 +14,18 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
 
         private MarkDownController Controller { get; set; }
 
+        private CancellationToken CancellationToken { get; set; }
+
         [SetUp]
         public void Setup()
         {
             DocumentServiceMoq = new Mock<IDocumentService>();
             Controller = new MarkDownController(DocumentServiceMoq.Object);
+            CancellationToken = new CancellationToken();
         }
 
         [Test]
-        public async Task MarkDownController_Get_ServiceReturnsDocument()
+        public async Task MarkDownController_GetAsync_ServiceReturnsDocument()
         {
             // Arrange
             var document = new Document
@@ -30,13 +33,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 Id = 1,
                 MarkDown = "# Hello World"
             };
-            DocumentServiceMoq.Setup(d => d.GetDocument(document.Id)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.GetDocumentAsync(document.Id, CancellationToken)).ReturnsAsync(document);
 
             // Act
-            var actionResult = await Controller.Get(document.Id);
+            var actionResult = await Controller.GetAsync(document.Id, CancellationToken);
 
             // Assert
-            var okObjectResult = actionResult as OkObjectResult;
+            var okObjectResult = actionResult.Result as OkObjectResult;
             var model = okObjectResult?.Value as MarkDownModel;
 
             Assert.IsNotNull(okObjectResult);
@@ -45,35 +48,31 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Get_ServiceReturnsNull()
+        public async Task MarkDownController_GetAsync_ServiceReturnsNull()
         {
             // Arrange
-            DocumentServiceMoq.Setup(d => d.GetDocument(1)).ReturnsAsync((Document?)null);
+            DocumentServiceMoq.Setup(d => d.GetDocumentAsync(1, CancellationToken)).ReturnsAsync((Document?)null);
 
             // Act
-            var actionResult = await Controller.Get(1);
+            var actionResult = await Controller.GetAsync(1, CancellationToken);
 
             // Assert
-            var okObjectResult = actionResult as OkObjectResult;
-            var model = okObjectResult?.Value as MarkDownModel;
-
-            Assert.IsNotNull(okObjectResult);
-            Assert.IsNotNull(model);
-            Assert.That(model.Body, Is.EqualTo(string.Empty));
+            var notFoundResult = actionResult.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
         }
 
         [Test]
-        public async Task MarkDownController_Get_ServiceThrowsException()
+        public async Task MarkDownController_GetAsync_ServiceThrowsException()
         {
             // Arrange
             var exception = new Exception("exception raised by service");
-            DocumentServiceMoq.Setup(d => d.GetDocument(1)).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.GetDocumentAsync(1, CancellationToken)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.Get(1);
+            var actionResult = await Controller.GetAsync(1, CancellationToken);
 
             // Assert
-            var result = actionResult as ObjectResult;
+            var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
             Assert.IsNotNull(result);
@@ -83,7 +82,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_GetReadMe_ServiceReturnsDocument()
+        public async Task MarkDownController_GetReadMeAsync_ServiceReturnsDocument()
         {
             // Arrange
             var document = new Document
@@ -91,13 +90,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 Id = 1,
                 MarkDown = "# Hello World"
             };
-            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocumentAsync(CancellationToken)).ReturnsAsync(document);
 
             // Act
-            var actionResult = await Controller.GetReadMe();
+            var actionResult = await Controller.GetReadMeAsync(CancellationToken);
 
             // Assert
-            var okObjectResult = actionResult as OkObjectResult;
+            var okObjectResult = actionResult.Result as OkObjectResult;
             var model = okObjectResult?.Value as MarkDownModel;
 
             Assert.IsNotNull(okObjectResult);
@@ -106,35 +105,31 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_GetReadMe_ServiceReturnsNull()
+        public async Task MarkDownController_GetReadMeAsync_ServiceReturnsNull()
         {
             // Arrange
-            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ReturnsAsync((Document?)null);
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocumentAsync(CancellationToken)).ReturnsAsync((Document?)null);
 
             // Act
-            var actionResult = await Controller.GetReadMe();
+            var actionResult = await Controller.GetReadMeAsync(CancellationToken);
 
             // Assert
-            var okObjectResult = actionResult as OkObjectResult;
-            var model = okObjectResult?.Value as MarkDownModel;
-
-            Assert.IsNotNull(okObjectResult);
-            Assert.IsNotNull(model);
-            Assert.That(model.Body, Is.EqualTo(string.Empty));
+            var notFoundResult = actionResult.Result as NotFoundResult;
+            Assert.IsNotNull(notFoundResult);
         }
 
         [Test]
-        public async Task MarkDownController_GetReadMe_ServiceThrowsException()
+        public async Task MarkDownController_GetReadMeAsync_ServiceThrowsException()
         {
             // Arrange
             var exception = new Exception("exception raised by service");
-            DocumentServiceMoq.Setup(d => d.GetReadMeDocument()).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.GetReadMeDocumentAsync(CancellationToken)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.GetReadMe();
+            var actionResult = await Controller.GetReadMeAsync(CancellationToken);
 
             // Assert
-            var result = actionResult as ObjectResult;
+            var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
             Assert.IsNotNull(result);
@@ -144,7 +139,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Post_ModelNotValid()
+        public async Task MarkDownController_PostAsync_ModelNotValid()
         {
             // Arrange
             var model = new MarkDownModel
@@ -153,10 +148,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
 
             // Act
-            var actionResult = await Controller.Post(model);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as BadRequestObjectResult;
+            var result = actionResult.Result as BadRequestObjectResult;
             var modelResult = result?.Value as string;
 
             Assert.IsNotNull(result);
@@ -165,59 +160,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Post_ServiceReturnsNull()
-        {
-            // Arrange
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = "# Hello World",
-            };
-            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync((Document?)null);
-
-            // Act
-            var actionResult = await Controller.Post(model);
-
-            // Assert
-            var result = actionResult as ObjectResult;
-            var modelResult = result?.Value as Exception;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-        }
-
-        [Test]
-        public async Task MarkDownController_Post_ServiceReturnsDocumentWithEmptyMarkDown()
-        {
-            // Arrange
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = "# Hello World",
-            };
-            var document = new Document
-            {
-                Id = 1,
-                MarkDown = string.Empty,
-            };
-
-            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync(document);
-
-            // Act
-            var actionResult = await Controller.Post(model);
-
-            // Assert
-            var result = actionResult as ObjectResult;
-            var modelResult = result?.Value as Exception;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-        }
-
-        [Test]
-        public async Task MarkDownController_Post_ServiceThrowsException()
+        public async Task MarkDownController_PostAsync_ServiceThrowsException()
         {
             // Arrange
             var model = new MarkDownModel
@@ -227,13 +170,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
             var exception = new Exception("exception raised by service");
 
-            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.Post(model);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as ObjectResult;
+            var result = actionResult.Result as ObjectResult;
             var modelResult = result?.Value as Exception;
 
             Assert.IsNotNull(result);
@@ -243,7 +186,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Post_ServiceReturnsDocument()
+        public async Task MarkDownController_PostAsync_ServiceReturnsDocument()
         {
             // Arrange
             var markDownBody = "# Hello World";
@@ -258,13 +201,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 MarkDown = markDownBody,
             };
 
-            DocumentServiceMoq.Setup(d => d.UpdateDocument(model.Id, model.Body)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ReturnsAsync(document);
 
             // Act
-            var actionResult = await Controller.Post(model);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as OkObjectResult;
+            var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as MarkDownModel;
 
             Assert.IsNotNull(result);
@@ -273,7 +216,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Put_ModelNotValid()
+        public async Task MarkDownController_PutAsync_ModelNotValid()
         {
             // Arrange
             var model = new MarkDownModel
@@ -282,10 +225,10 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
 
             // Act
-            var actionResult = await Controller.Put(model);
+            var actionResult = await Controller.PutAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as BadRequestObjectResult;
+            var result = actionResult.Result as BadRequestObjectResult;
             var modelResult = result?.Value as string;
 
             Assert.IsNotNull(result);
@@ -294,59 +237,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Put_ServiceReturnsNull()
-        {
-            // Arrange
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = "# Hello World",
-            };
-            DocumentServiceMoq.Setup(d => d.InsertDocument(model.Body)).ReturnsAsync((Document?)null);
-
-            // Act
-            var actionResult = await Controller.Put(model);
-
-            // Assert
-            var result = actionResult as ObjectResult;
-            var modelResult = result?.Value as Exception;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-        }
-
-        [Test]
-        public async Task MarkDownController_Put_ServiceReturnsDocumentWithEmptyMarkDown()
-        {
-            // Arrange
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = "# Hello World",
-            };
-            var document = new Document
-            {
-                Id = 1,
-                MarkDown = string.Empty,
-            };
-
-            DocumentServiceMoq.Setup(d => d.InsertDocument(model.Body)).ReturnsAsync(document);
-
-            // Act
-            var actionResult = await Controller.Put(model);
-
-            // Assert
-            var result = actionResult as ObjectResult;
-            var modelResult = result?.Value as Exception;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-        }
-
-        [Test]
-        public async Task MarkDownController_Put_ServiceThrowsException()
+        public async Task MarkDownController_PutAsync_ServiceThrowsException()
         {
             // Arrange
             var model = new MarkDownModel
@@ -356,13 +247,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
             var exception = new Exception("exception raised by service");
 
-            DocumentServiceMoq.Setup(d => d.InsertDocument(model.Body)).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.Put(model);
+            var actionResult = await Controller.PutAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as ObjectResult;
+            var result = actionResult.Result as ObjectResult;
             var modelResult = result?.Value as Exception;
 
             Assert.IsNotNull(result);
@@ -372,7 +263,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_Put_ServiceReturnsDocument()
+        public async Task MarkDownController_PutAsync_ServiceReturnsDocument()
         {
             // Arrange
             var markDownBody = "# Hello World";
@@ -387,13 +278,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 MarkDown = markDownBody,
             };
 
-            DocumentServiceMoq.Setup(d => d.InsertDocument(model.Body)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ReturnsAsync(document);
 
             // Act
-            var actionResult = await Controller.Put(model);
+            var actionResult = await Controller.PutAsync(model, CancellationToken);
 
             // Assert
-            var result = actionResult as OkObjectResult;
+            var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as MarkDownModel;
 
             Assert.IsNotNull(result);
@@ -402,18 +293,18 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_GetAll_ServiceReturnsEmtpyList()
+        public async Task MarkDownController_GetAllAsync_ServiceReturnsEmtpyList()
         {
             // Arrange
             var listDocument = new List<Document>();
 
-            DocumentServiceMoq.Setup(d => d.GetAllDocuments()).ReturnsAsync(listDocument);
+            DocumentServiceMoq.Setup(d => d.GetAllDocumentsAsync(CancellationToken)).ReturnsAsync(listDocument);
 
             // Act
-            var actionResult = await Controller.GetAll();
+            var actionResult = await Controller.GetAllAsync(CancellationToken);
 
             // Assert
-            var result = actionResult as OkObjectResult;
+            var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as List<MarkDownModel>;
 
             Assert.IsNotNull(result);
@@ -423,7 +314,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_GetAll_ServiceReturnsList()
+        public async Task MarkDownController_GetAllAsync_ServiceReturnsList()
         {
             // Arrange
             var listDocument = new List<Document>();
@@ -442,13 +333,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             listDocument.Add(document1);
             listDocument.Add(document2);
 
-            DocumentServiceMoq.Setup(d => d.GetAllDocuments()).ReturnsAsync(listDocument);
+            DocumentServiceMoq.Setup(d => d.GetAllDocumentsAsync(CancellationToken)).ReturnsAsync(listDocument);
 
             // Act
-            var actionResult = await Controller.GetAll();
+            var actionResult = await Controller.GetAllAsync(CancellationToken);
 
             // Assert
-            var result = actionResult as OkObjectResult;
+            var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as List<MarkDownModel>;
 
             Assert.IsNotNull(result);
@@ -457,18 +348,18 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         }
 
         [Test]
-        public async Task MarkDownController_GetAll_ServiceServiceThrowsException()
+        public async Task MarkDownController_GetAllAsync_ServiceServiceThrowsException()
         {
             // Arrange
             var exception = new Exception("exception raised by service");
 
-            DocumentServiceMoq.Setup(d => d.GetAllDocuments()).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.GetAllDocumentsAsync(CancellationToken)).ThrowsAsync(exception);
 
             // Act
-            var actionResult = await Controller.GetAll();
+            var actionResult = await Controller.GetAllAsync(CancellationToken);
 
             // Assert
-            var result = actionResult as ObjectResult;
+            var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
             Assert.IsNotNull(result);

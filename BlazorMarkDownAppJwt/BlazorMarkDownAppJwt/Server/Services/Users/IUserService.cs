@@ -4,7 +4,7 @@ namespace BlazorMarkDownAppJwt.Server.Services.Users
 {
     public interface IUserService
     {
-        Task<User?> AuthenticateUser(string? email, string? password);
-        Task<User?> AddUser(User user);
+        Task<User?> AuthenticateUserAsync(string? email, string? password, CancellationToken cancellationToken);
+        Task<User?> AddUserAsync(User user, CancellationToken cancellationToken);
     }
 }
