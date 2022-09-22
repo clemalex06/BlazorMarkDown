@@ -1,0 +1,10 @@
+﻿@page "/markdowndetail/{currentId:long?}"
+
+<PageTitle>MarkDown Editor</PageTitle>
+
+<h1>MarkDown Editor</h1>
+
+<p>Let's use incredible MarkDownEditor App!.</p>
+
+<UserComponent UserMail="@UserMail"></UserComponent>
+<MarkDownComponent UserMail="@UserMail" MarkDownId="@CurrentId"></MarkDownComponent>

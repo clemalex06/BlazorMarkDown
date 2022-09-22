@@ -1,0 +1,40 @@
+﻿@page "/login"
+
+<h3>Login</h3>
+<div class="row">
+	@if (!string.IsNullOrWhiteSpace(Message))
+	{
+		<div class="alert alert-secondary" role="alert">
+			@Message
+		</div>
+	}
+</div>
+
+@if (IsDisabled)
+{
+	<div class="spinner"></div>
+}
+else
+{
+	<EditForm Model="User" OnValidSubmit="OnValid" style="max-width:500px;">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<div class="mb-2">
+			<InputText class="form-control" @bind-Value="User.Email" placeholder="Enter Email"></InputText>
+		</div>
+		<div class="mb-2">
+			<InputText type="password" class="form-control" @bind-Value="User.Password" placeholder="Enter Password"></InputText>
+		</div>
+		<div class="mb-2 text-right">
+			<button class="btn btn-secondary" disabled="@IsDisabled">login</button>
+		</div>
+	</EditForm>
+
+	<p><a href="/Register">CLICK HERE TO REGISTER</a></p>
+}
+
+
+
+@code {
+
+}

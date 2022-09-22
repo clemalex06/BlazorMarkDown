@@ -1,0 +1,42 @@
+﻿@page "/register"
+
+<h3>Register</h3>
+<div class="row">
+	@if (!string.IsNullOrWhiteSpace(Message))
+	{
+		<div class="alert alert-secondary" role="alert">
+			@Message
+		</div>
+	}
+</div>
+
+<p><a href="/login">@Login</a></p>
+@if (IsDisabled)
+{
+	<div class="spinner"></div>
+}
+else
+{
+	<EditForm Model="Reg" OnValidSubmit="OnValid" style="max-width:500px;">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<div class="mb-2">
+			<InputText class="form-control" @bind-Value="Reg.Email" placeholder="Enter Email"></InputText>
+		</div>
+		<div class="mb-2">
+			<InputText class="form-control" @bind-Value="Reg.FirstName" placeholder="Enter First Name"></InputText>
+		</div>
+		<div class="mb-2">
+			<InputText class="form-control" @bind-Value="Reg.LastName" placeholder="Enter Last Name"></InputText>
+		</div>
+		<div class="mb-2">
+			<InputText type="password" class="form-control" @bind-Value="Reg.Password" placeholder="Enter Password"></InputText>
+		</div>
+		<div class="mb-2">
+			<InputText type="password" class="form-control" @bind-Value="Reg.Confirmpwd" placeholder="Confirm Password"></InputText>
+		</div>
+		<div class="mb-2 text-right">
+			<button class="btn btn-secondary" disabled="@IsDisabled">register</button>
+		</div>
+	</EditForm>
+}

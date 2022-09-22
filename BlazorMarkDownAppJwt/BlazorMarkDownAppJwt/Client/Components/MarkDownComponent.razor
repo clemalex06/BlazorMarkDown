@@ -1,0 +1,85 @@
+﻿@if (isLoading)
+{
+	<div class="spinner"></div>
+}
+else if (MarkDownId != null && MarkDownId != 0 && displayEditor)
+{
+	<div class="row">
+		@if (!string.IsNullOrWhiteSpace(successMessage))
+		{
+			<div class="alert alert-success" role="alert">
+				@successMessage
+			</div>
+		}
+		@if (!string.IsNullOrWhiteSpace(errorMessage))
+		{
+			<div class="alert alert-danger" role="alert">
+				@errorMessage
+			</div>
+		}
+	</div>
+	<div class="row">
+		<div class="col-6">
+			<h3>MarkDown @MarkDownId : Editor</h3>
+			@if (!string.IsNullOrWhiteSpace(UserMail))
+			{
+				<div class="mb-3 text-right">
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Update MarkDown</button>
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Create New MarkDown</button>
+				</div>
+				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
+			}
+			else
+			{
+				<textarea class="form-control text-area-resized" disabled @bind="markDownModel.Body"></textarea>
+			}
+		</div>
+		@if (checkPreview)
+		{
+			<div class="col-6">
+				<h3>MarkDown @MarkDownId : PreView</h3>
+				@if (!string.IsNullOrWhiteSpace(UserMail))
+				{
+					<div class="mb-3 text-right">
+						<button class="btn btn-primary btn-margin" @onclick="ReloadPreview">Reload Preview</button>
+						<button class="btn btn-primary btn-margin" @onclick="()=>CheckPreview(false)">View Html generated</button>
+						<button class="btn btn-primary btn-margin" @onclick="()=>DisplayEditor(false)">Hide Editor</button>
+					</div>
+				}
+				<div>@markupString</div>
+			</div>
+		}
+		else
+		{
+			<div class="col-6">
+				<h3>MarkDown @MarkDownId : Html Generated</h3>
+				@if (!string.IsNullOrWhiteSpace(UserMail))
+				{
+					<div class="mb-3 text-right">
+						<button class="btn btn-primary" @onclick="ReloadPreview">Reload Preview</button>
+						<button class="btn btn-primary" @onclick="()=>CheckPreview(true)">View Preview generated</button>
+					</div>
+				}
+				<div>@markDownModel.Html</div>
+			</div>
+		}
+	</div>
+}
+else
+{
+	<div class="col-6">
+
+		@if (!displayEditor)
+		{
+			<h3>MarkDown @MarkDownId : Editor</h3>
+			<div class="mb-3 text-right">
+				<button class="btn btn-primary btn-margin" @onclick="()=>DisplayEditor(true)">Display Editor</button>
+			</div>
+		}
+		else
+		{
+			<h3>README</h3>
+		}
+		<div>@markupString</div>
+	</div>
+}

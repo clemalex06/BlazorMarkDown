@@ -1,0 +1,33 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>MarkDown List</h1>
+
+<p>Please choose one the markdown to view.</p>
+<SurveyPrompt Title="How BlazorMarkDownApp has been built from scratch?" />
+
+@if (isLoading)
+{
+	<div class="spinner"></div>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var markDown in markDowns)
+			{
+				<tr>
+					<td>MarkDown @markDown.Id</td>
+					<td><a href="/markdowndetail/@markDown.Id">View in Editor</a></td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}

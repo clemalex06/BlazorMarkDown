@@ -1,4 +1,4 @@
-# MarkDown Editor  With Blazor Web Assembly
+﻿# MarkDown Editor  With Blazor Web Assembly
 
 <a href="https://docs.microsoft.com/fr-fr/aspnet/core/blazor/?view=aspnetcore-6.0"><img src="https://docs.microsoft.com/fr-fr/aspnet/core/blazor/index/_static/blazor-webassembly.png?view=aspnetcore-6.0" alt="Blazor WebAssembly" height="256px" align="right"></a>
 
