@@ -1,8 +1,3 @@
-// Program.cs
-using Microsoft.AspNetCore.ResponseCompression;
-
-
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using BlazorMarkDownAppJwt.Server.Services.Users;
@@ -23,54 +18,33 @@ builder.Services.AddTransient<IDocumentService, DocumentService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
-	options.TokenValidationParameters = new TokenValidationParameters
-	{
-		ValidateAudience = true,
-		ValidAudience = "domain.com",
-		ValidateIssuer = true,
-		ValidIssuer = "domain.com",
-		ValidateLifetime = true,
-		ValidateIssuerSigningKey = true,
-		IssuerSigningKey = JWTHelper.GetSecretKey()
-	};
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = true,
+        ValidAudience = "domain.com",
+        ValidateIssuer = true,
+        ValidIssuer = "domain.com",
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = JWTHelper.GetSecretKey()
+    };
 });
-// NOTE: end block
 
-
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseWebAssemblyDebugging();
+    app.UseWebAssemblyDebugging();
 }
-else
-{
-	app.UseExceptionHandler("/Error");
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-	app.UseHsts();
-}
-
-app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
-
-
-app.UseAuthentication(); // NOTE: line is newly added
-
-
+app.UseAuthentication();
 app.UseRouting();
-
-
-app.UseAuthorization(); // NOTE: line is newly addded, notice placement after UseRouting()
-
-
-app.MapRazorPages();
+app.UseAuthorization();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
-
 app.Run();

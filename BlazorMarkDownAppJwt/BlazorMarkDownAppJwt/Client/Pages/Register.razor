@@ -1,82 +1,42 @@
 ﻿@page "/register"
-@using BlazorMarkDownAppJwt.Shared
-@inject HttpClient Http
 
 <h3>Register</h3>
 <div class="row">
-	@if (!string.IsNullOrWhiteSpace(message))
+	@if (!string.IsNullOrWhiteSpace(Message))
 	{
 		<div class="alert alert-secondary" role="alert">
-			@message
+			@Message
 		</div>
 	}
 </div>
 
-<p><a href="/login">@login</a></p>
-@if (isDisabled)
+<p><a href="/login">@Login</a></p>
+@if (IsDisabled)
 {
 	<div class="spinner"></div>
 }
 else
 {
-	<EditForm Model="reg" OnValidSubmit="OnValid" style="max-width:500px;">
+	<EditForm Model="Reg" OnValidSubmit="OnValid" style="max-width:500px;">
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 		<div class="mb-2">
-			<InputText class="form-control" @bind-Value="reg.email" placeholder="Enter Email"></InputText>
+			<InputText class="form-control" @bind-Value="Reg.Email" placeholder="Enter Email"></InputText>
 		</div>
 		<div class="mb-2">
-			<InputText class="form-control" @bind-Value="reg.firstName" placeholder="Enter First Name"></InputText>
+			<InputText class="form-control" @bind-Value="Reg.FirstName" placeholder="Enter First Name"></InputText>
 		</div>
 		<div class="mb-2">
-			<InputText class="form-control" @bind-Value="reg.lastName" placeholder="Enter Last Name"></InputText>
+			<InputText class="form-control" @bind-Value="Reg.LastName" placeholder="Enter Last Name"></InputText>
 		</div>
 		<div class="mb-2">
-			<InputText type="password" class="form-control" @bind-Value="reg.password" placeholder="Enter Password"></InputText>
+			<InputText type="password" class="form-control" @bind-Value="Reg.Password" placeholder="Enter Password"></InputText>
 		</div>
 		<div class="mb-2">
-			<InputText type="password" class="form-control" @bind-Value="reg.confirmpwd" placeholder="Confirm Password"></InputText>
+			<InputText type="password" class="form-control" @bind-Value="Reg.Confirmpwd" placeholder="Confirm Password"></InputText>
 		</div>
 		<div class="mb-2 text-right">
-			<button class="btn btn-secondary" disabled="@isDisabled">register</button>
+			<button class="btn btn-secondary" disabled="@IsDisabled">register</button>
 		</div>
 	</EditForm>
-}
-
-@code {
-	RegModel reg = new RegModel();
-	string? message = string.Empty, login = string.Empty;
-	bool isDisabled = false;
-
-	private async Task OnValid()
-	{
-		try
-		{
-			isDisabled = true;
-			using (var msg = await Http.PostAsJsonAsync<RegModel>("/api/auth/register", reg, System.Threading.CancellationToken.None))
-			{
-				if (msg.IsSuccessStatusCode)
-				{
-					LoginResult? result = await msg.Content.ReadFromJsonAsync<LoginResult>();
-					message = result?.message;
-					if (result != null && result.success)
-					{
-						message += " Please LOGIN to continue.";
-						login = "Click here to LOGIN.";
-					}
-				}
-			}
-
-		}
-		catch
-		{
-
-		}
-		finally
-		{
-			isDisabled = false;
-		}
-
-
-	}
 }

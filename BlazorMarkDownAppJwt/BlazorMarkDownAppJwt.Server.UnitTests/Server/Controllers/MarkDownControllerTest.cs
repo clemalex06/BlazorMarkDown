@@ -21,7 +21,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         {
             DocumentServiceMoq = new Mock<IDocumentService>();
             Controller = new MarkDownController(DocumentServiceMoq.Object);
-            CancellationToken = new CancellationToken();
+            var source = new CancellationTokenSource();
+            CancellationToken = source.Token;
         }
 
         [Test]
@@ -42,9 +43,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var okObjectResult = actionResult.Result as OkObjectResult;
             var model = okObjectResult?.Value as MarkDownModel;
 
-            Assert.IsNotNull(okObjectResult);
-            Assert.IsNotNull(model);
-            Assert.That(model.Body, Is.EqualTo(document.MarkDown));
+            Assert.Multiple(() =>
+            {
+                Assert.That(okObjectResult, Is.Not.Null);
+                Assert.That(model, Is.Not.Null);
+                Assert.That(model?.Body, Is.EqualTo(document.MarkDown));
+            });
         }
 
         [Test]
@@ -58,7 +62,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
 
             // Assert
             var notFoundResult = actionResult.Result as NotFoundResult;
-            Assert.IsNotNull(notFoundResult);
+            Assert.That(notFoundResult, Is.Not.Null);
         }
 
         [Test]
@@ -75,10 +79,14 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(model);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-            Assert.That(model.Message, Is.EqualTo(exception.Message));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(model, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+                Assert.That(model?.Message, Is.EqualTo(exception.Message));
+            });
+
         }
 
         [Test]
@@ -99,9 +107,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var okObjectResult = actionResult.Result as OkObjectResult;
             var model = okObjectResult?.Value as MarkDownModel;
 
-            Assert.IsNotNull(okObjectResult);
-            Assert.IsNotNull(model);
-            Assert.That(model.Body, Is.EqualTo(document.MarkDown));
+            Assert.Multiple(() =>
+            {
+                Assert.That(okObjectResult, Is.Not.Null);
+                Assert.That(model, Is.Not.Null);
+                Assert.That(model?.Body, Is.EqualTo(document.MarkDown));
+            });
         }
 
         [Test]
@@ -115,7 +126,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
 
             // Assert
             var notFoundResult = actionResult.Result as NotFoundResult;
-            Assert.IsNotNull(notFoundResult);
+            Assert.That(notFoundResult, Is.Not.Null);
         }
 
         [Test]
@@ -132,87 +143,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(model);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-            Assert.That(model.Message, Is.EqualTo(exception.Message));
-        }
-
-        [Test]
-        public async Task MarkDownController_PostAsync_ModelNotValid()
-        {
-            // Arrange
-            var model = new MarkDownModel
+            Assert.Multiple(() =>
             {
-                Body = string.Empty,
-            };
-
-            // Act
-            var actionResult = await Controller.PostAsync(model, CancellationToken);
-
-            // Assert
-            var result = actionResult.Result as BadRequestObjectResult;
-            var modelResult = result?.Value as string;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
-        }
-
-        [Test]
-        public async Task MarkDownController_PostAsync_ServiceThrowsException()
-        {
-            // Arrange
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = "# Hello World",
-            };
-            var exception = new Exception("exception raised by service");
-
-            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ThrowsAsync(exception);
-
-            // Act
-            var actionResult = await Controller.PostAsync(model, CancellationToken);
-
-            // Assert
-            var result = actionResult.Result as ObjectResult;
-            var modelResult = result?.Value as Exception;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-            Assert.That(modelResult, Is.EqualTo(exception));
-        }
-
-        [Test]
-        public async Task MarkDownController_PostAsync_ServiceReturnsDocument()
-        {
-            // Arrange
-            var markDownBody = "# Hello World";
-            var model = new MarkDownModel
-            {
-                Id = 1,
-                Body = markDownBody,
-            };
-            var document = new Document
-            {
-                Id = 1,
-                MarkDown = markDownBody,
-            };
-
-            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ReturnsAsync(document);
-
-            // Act
-            var actionResult = await Controller.PostAsync(model, CancellationToken);
-
-            // Assert
-            var result = actionResult.Result as OkObjectResult;
-            var modelResult = result?.Value as MarkDownModel;
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(model.Body, Is.EqualTo(modelResult.Body));
+                Assert.That(result, Is.Not.Null);
+                Assert.That(model, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+                Assert.That(model?.Message, Is.EqualTo(exception.Message));
+            });
         }
 
         [Test]
@@ -231,9 +168,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as BadRequestObjectResult;
             var modelResult = result?.Value as string;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
+            });
         }
 
         [Test]
@@ -247,7 +187,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             };
             var exception = new Exception("exception raised by service");
 
-            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ThrowsAsync(exception);
+            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ThrowsAsync(exception);
 
             // Act
             var actionResult = await Controller.PutAsync(model, CancellationToken);
@@ -256,10 +196,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as ObjectResult;
             var modelResult = result?.Value as Exception;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-            Assert.That(modelResult, Is.EqualTo(exception));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+                Assert.That(modelResult, Is.EqualTo(exception));
+            });
         }
 
         [Test]
@@ -278,7 +221,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
                 MarkDown = markDownBody,
             };
 
-            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ReturnsAsync(document);
+            DocumentServiceMoq.Setup(d => d.UpdateDocumentAsync(model.Id, model.Body, CancellationToken)).ReturnsAsync(document);
 
             // Act
             var actionResult = await Controller.PutAsync(model, CancellationToken);
@@ -287,9 +230,98 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as MarkDownModel;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(model.Body, Is.EqualTo(modelResult.Body));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(model.Body, Is.EqualTo(modelResult?.Body));
+            });
+        }
+
+        [Test]
+        public async Task MarkDownController_PostAsync_ModelNotValid()
+        {
+            // Arrange
+            var model = new MarkDownModel
+            {
+                Body = string.Empty,
+            };
+
+            // Act
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
+
+            // Assert
+            var result = actionResult.Result as BadRequestObjectResult;
+            var modelResult = result?.Value as string;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
+            });
+
+        }
+
+        [Test]
+        public async Task MarkDownController_PostAsync_ServiceThrowsException()
+        {
+            // Arrange
+            var model = new MarkDownModel
+            {
+                Id = 1,
+                Body = "# Hello World",
+            };
+            var exception = new Exception("exception raised by service");
+
+            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ThrowsAsync(exception);
+
+            // Act
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
+
+            // Assert
+            var result = actionResult.Result as ObjectResult;
+            var modelResult = result?.Value as Exception;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+                Assert.That(modelResult, Is.EqualTo(exception));
+            });
+        }
+
+        [Test]
+        public async Task MarkDownController_PostAsync_ServiceReturnsDocument()
+        {
+            // Arrange
+            var markDownBody = "# Hello World";
+            var model = new MarkDownModel
+            {
+                Id = 1,
+                Body = markDownBody,
+            };
+            var document = new Document
+            {
+                Id = 1,
+                MarkDown = markDownBody,
+            };
+
+            DocumentServiceMoq.Setup(d => d.InsertDocumentAsync(model.Body, CancellationToken)).ReturnsAsync(document);
+
+            // Act
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
+
+            // Assert
+            var result = actionResult.Result as OkObjectResult;
+            var modelResult = result?.Value as MarkDownModel;
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(model.Body, Is.EqualTo(modelResult?.Body));
+            });
         }
 
         [Test]
@@ -307,10 +339,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as List<MarkDownModel>;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(listDocument.Count, Is.EqualTo(modelResult.Count));
-
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(listDocument, Has.Count.EqualTo(modelResult?.Count));
+            });
         }
 
         [Test]
@@ -342,9 +376,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as OkObjectResult;
             var modelResult = result?.Value as List<MarkDownModel>;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(modelResult);
-            Assert.That(listDocument.Count, Is.EqualTo(modelResult.Count));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(listDocument, Has.Count.EqualTo(modelResult?.Count));
+            });
         }
 
         [Test]
@@ -362,10 +399,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             var result = actionResult.Result as ObjectResult;
             var model = result?.Value as Exception;
 
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(model);
-            Assert.That(result.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
-            Assert.That(model.Message, Is.EqualTo(exception.Message));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(model, Is.Not.Null);
+                Assert.That(result?.StatusCode, Is.EqualTo((int)HttpStatusCode.InternalServerError));
+                Assert.That(model?.Message, Is.EqualTo(exception.Message));
+            });
         }
     }
 }

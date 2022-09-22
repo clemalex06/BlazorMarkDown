@@ -26,7 +26,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
 
             WebHostEnvironmentMoq = new Mock<IWebHostEnvironment>();
             Service = new DocumentService(this.Ctx, this.WebHostEnvironmentMoq.Object);
-            CancellationToken = new CancellationToken();
+            var source = new CancellationTokenSource();
+            CancellationToken = source.Token;
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.GetDocumentAsync(1, CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.GetDocumentAsync(1, CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.InsertDocumentAsync(markDown, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.MarkDown, Is.EqualTo(markDown));
 
             // Clean
@@ -84,7 +85,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.UpdateDocumentAsync(document.Id, markDownupdated, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.MarkDown, Is.EqualTo(markDownupdated));
 
             // Clean
@@ -122,7 +123,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.GetReadMeDocumentAsync(CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -134,8 +135,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.GetAllDocumentsAsync(CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.That(result.Count, Is.EqualTo(0));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Count.EqualTo(0));
         }
 
         [Test]
@@ -161,15 +162,13 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.GetAllDocumentsAsync(CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Has.Count.EqualTo(2));
 
             // Clean
             this.Ctx.Document.Remove(document1);
             this.Ctx.Document.Remove(document2);
             this.Ctx.SaveChanges();
         }
-
-
     }
 }

@@ -2,6 +2,7 @@
 using BlazorMarkDownAppJwt.Server.Entities;
 using BlazorMarkDownAppJwt.Server.Services.Users;
 using BlazorMarkDownAppJwt.Shared;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
@@ -20,7 +21,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
         {
             UserServiceMoq = new Mock<IUserService>();
             Controller = new AuthController(UserServiceMoq.Object);
-            CancellationToken = new CancellationToken();
+            var source = new CancellationTokenSource();
+            CancellationToken = source.Token;
         }
 
         [Test]
@@ -29,19 +31,21 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new RegModel
             {
-                email = "a@a.fr",
-                firstName = "firstName",
-                lastName = "lastName",
-                password = "password",
-                confirmpwd = "confirmpwd",
+                Email = "a@a.fr",
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                Confirmpwd = "confirmpwd",
             };
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult.Success, Is.False);
         }
 
         [Test]
@@ -50,20 +54,22 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new RegModel
             {
-                email = "a@a.fr",
-                firstName = "firstName",
-                lastName = "lastName",
-                password = "password",
-                confirmpwd = "password",
+                Email = "a@a.fr",
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                Confirmpwd = "password",
             };
             UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ReturnsAsync((User?)null);
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult.Success, Is.False);
         }
 
         [Test]
@@ -72,27 +78,29 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new RegModel
             {
-                email = "a@a.fr",
-                firstName = "firstName",
-                lastName = "lastName",
-                password = "password",
-                confirmpwd = "password",
+                Email = "a@a.fr",
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                Confirmpwd = "password",
             };
             UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ReturnsAsync(new User
             {
-                Email = model.email,
-                FirstName = model.firstName,
+                Email = model.Email,
+                FirstName = model.FirstName,
                 Id = 1,
-                LastName = model.lastName,
-                Password = model.password,
+                LastName = model.LastName,
+                Password = model.Password,
             });
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult.Success, Is.True);
         }
 
         [Test]
@@ -101,23 +109,28 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new RegModel
             {
-                email = "a@a.fr",
-                firstName = "firstName",
-                lastName = "lastName",
-                password = "password",
-                confirmpwd = "password",
+                Email = "a@a.fr",
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                Confirmpwd = "password",
             };
             var exceptionMessage = "exception raised by service";
 
             UserServiceMoq.Setup(p => p.AddUserAsync(It.IsAny<User>(), CancellationToken)).ThrowsAsync(new Exception(exceptionMessage));
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.success);
-            Assert.That(result.message, Is.EqualTo(exceptionMessage));
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.Multiple(() =>
+            {
+                Assert.That(modelResult, Is.Not.Null);
+                Assert.That(modelResult?.Success, Is.False);
+                Assert.That(modelResult?.Message, Is.EqualTo(exceptionMessage));
+            });
         }
 
         [Test]
@@ -126,27 +139,29 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new LoginModel
             {
-                email = "a@a.fr",
-                password = "password",
+                Email = "a@a.fr",
+                Password = "password",
             };
             var firstName = "firstName";
             var lastName = "lastName";
 
-            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ReturnsAsync(new User
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.Email, model.Password, CancellationToken)).ReturnsAsync(new User
             {
-                Email = model.email,
+                Email = model.Email,
                 FirstName = firstName,
                 Id = 1,
                 LastName = lastName,
-                Password = model.password,
+                Password = model.Password,
             });
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsTrue(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult?.Success, Is.True);
         }
 
         [Test]
@@ -155,18 +170,20 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new LoginModel
             {
-                email = "a@a.fr",
-                password = "password",
+                Email = "a@a.fr",
+                Password = "password",
             };
 
-            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ReturnsAsync((User?)null);
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.Email, model.Password, CancellationToken)).ReturnsAsync((User?)null);
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult.Success, Is.False);
         }
 
         [Test]
@@ -175,19 +192,21 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Controllers
             // Arrange
             var model = new LoginModel
             {
-                email = "a@a.fr",
-                password = "password",
+                Email = "a@a.fr",
+                Password = "password",
             };
             var exceptionMessage = "exception raised by service";
 
-            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.email, model.password, CancellationToken)).ThrowsAsync(new Exception(exceptionMessage));
+            UserServiceMoq.Setup(p => p.AuthenticateUserAsync(model.Email, model.Password, CancellationToken)).ThrowsAsync(new Exception(exceptionMessage));
 
             // Act
-            var result = await Controller.PostAsync(model, CancellationToken);
+            var actionResult = await Controller.PostAsync(model, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsFalse(result.success);
+            var okObjectResult = actionResult.Result as OkObjectResult;
+            var modelResult = okObjectResult?.Value as LoginResult;
+            Assert.That(modelResult, Is.Not.Null);
+            Assert.That(modelResult.Success, Is.False);
         }
     }
 }

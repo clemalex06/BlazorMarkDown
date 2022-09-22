@@ -12,57 +12,55 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-
-
         private IUserService UserService { get; }
 
         public AuthController(IUserService userService)
         {
-            this.UserService = userService;
+            UserService = userService;
         }
 
         [HttpPost]
         [Route("api/auth/register")]
-        public async Task<LoginResult> PostAsync([FromBody] RegModel reg, CancellationToken cancellationToken)
+        public async Task<ActionResult<LoginResult>> PostAsync([FromBody] RegModel reg, CancellationToken cancellationToken)
         {
             try
             {
-                if (reg.password != reg.confirmpwd)
-                    return new LoginResult { message = "Password and confirm password do not match.", success = false };
+                if (reg.Password != reg.Confirmpwd)
+                    return Ok(new LoginResult { Message = "Password and confirm password do not match.", Success = false });
                 var regUser = new User
                 {
-                    Email = reg.email,
-                    Password = reg.password,
-                    FirstName = reg.firstName,
-                    LastName = reg.lastName,
+                    Email = reg.Email,
+                    Password = reg.Password,
+                    FirstName = reg.FirstName,
+                    LastName = reg.LastName,
 
                 };
                 User? newuser = await UserService.AddUserAsync(regUser, cancellationToken);
                 if (newuser != null)
-                    return new LoginResult { message = "Registration successful.", jwtBearer = JWTHelper.CreateJWT(newuser), email = reg.email, success = true };
-                return new LoginResult { message = "User already exists.", success = false };
+                    return Ok(new LoginResult { Message = "Registration successful.", JwtBearer = JWTHelper.CreateJWT(newuser), Email = reg.Email, Success = true });
+                return Ok(new LoginResult { Message = "User already exists.", Success = false });
 
             }
             catch (Exception ex)
             {
-                return new LoginResult { message = ex.Message, success = false };
+                return Ok(new LoginResult { Message = ex.Message, Success = false });
             }
         }
 
         [HttpPost]
         [Route("api/auth/login")]
-        public async Task<LoginResult> PostAsync([FromBody] LoginModel log, CancellationToken cancellationToken)
+        public async Task<ActionResult<LoginResult>> PostAsync([FromBody] LoginModel log, CancellationToken cancellationToken)
         {
             try
             {
-                User? user = await UserService.AuthenticateUserAsync(log.email, log.password, cancellationToken);
+                User? user = await UserService.AuthenticateUserAsync(log.Email, log.Password, cancellationToken);
                 if (user != null)
-                    return new LoginResult { message = "Login successful.", jwtBearer = JWTHelper.CreateJWT(user), email = log.email, success = true };
-                return new LoginResult { message = "User/password not found.", success = false };
+                    return Ok(new LoginResult { Message = "Login successful.", JwtBearer = JWTHelper.CreateJWT(user), Email = log.Email, Success = true });
+                return Ok(new LoginResult { Message = "User/password not found.", Success = false });
             }
             catch (Exception ex)
             {
-                return new LoginResult { message = ex.Message, success = false };
+                return Ok(new LoginResult { Message = ex.Message, Success = false });
             }
         }
     }

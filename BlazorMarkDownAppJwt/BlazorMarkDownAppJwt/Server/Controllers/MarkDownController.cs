@@ -103,9 +103,9 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("api/markdown/")]
-        public async Task<ActionResult<MarkDownModel>> PostAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
+        public async Task<ActionResult<MarkDownModel>> PutAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(markDownModel?.Body))
             {
@@ -114,7 +114,7 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
 
             try
             {
-                
+
                 var updatedDocument = await MarkDownService.UpdateDocumentAsync(markDownModel.Id, markDownModel.Body, cancellationToken);
 
                 var updatedMarkDownModel = new MarkDownModel
@@ -131,10 +131,10 @@ namespace BlazorMarkDownAppJwt.Server.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPost]
         [Route("api/markdown/")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MarkDownModel))]
-        public async Task<ActionResult<MarkDownModel>> PutAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
+        public async Task<ActionResult<MarkDownModel>> PostAsync([FromBody] MarkDownModel markDownModel, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(markDownModel?.Body))
             {

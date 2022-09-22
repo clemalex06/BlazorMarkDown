@@ -1,16 +1,8 @@
-﻿@using BlazorMarkDownAppJwt.Client.Components
-@using BlazorMarkDownAppJwt.Shared
-@using System.Text
-@using Newtonsoft.Json
-@inject HttpClient HttpClient
-@inject IJSRuntime jsr
-@inject NavigationManager nav
-
-@if (isLoading)
+﻿@if (isLoading)
 {
 	<div class="spinner"></div>
 }
-else if (MarkDownId != null && MarkDownId != 0  && displayEditor)
+else if (MarkDownId != null && MarkDownId != 0 && displayEditor)
 {
 	<div class="row">
 		@if (!string.IsNullOrWhiteSpace(successMessage))
@@ -32,8 +24,8 @@ else if (MarkDownId != null && MarkDownId != 0  && displayEditor)
 			@if (!string.IsNullOrWhiteSpace(UserMail))
 			{
 				<div class="mb-3 text-right">
-					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Update MarkDown</button>
-					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Create New MarkDown</button>
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Put)">Update MarkDown</button>
+					<button class="btn btn-success btn-margin" @onclick="()=>UpsertMarkDown(HttpMethod.Post)">Create New MarkDown</button>
 				</div>
 				<textarea class="form-control text-area-resized" @bind="markDownModel.Body"></textarea>
 			}
@@ -76,7 +68,7 @@ else if (MarkDownId != null && MarkDownId != 0  && displayEditor)
 else
 {
 	<div class="col-6">
-		
+
 		@if (!displayEditor)
 		{
 			<h3>MarkDown @MarkDownId : Editor</h3>
@@ -90,144 +82,4 @@ else
 		}
 		<div>@markupString</div>
 	</div>
-}
-
-@code {
-
-	[Parameter]
-	public string? UserMail { get; set; }
-
-	[Parameter]
-	public long? MarkDownId { get; set; }
-
-	private MarkupString markupString;
-
-	private string successMessage = string.Empty;
-	private string errorMessage = string.Empty;
-
-	private bool isLoading = true;
-	private bool checkPreview = true;
-	private bool displayEditor = true;
-
-	private MarkDownModel markDownModel = new MarkDownModel
-	{
-		Id = 0,
-		Body = string.Empty
-	};
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-		isLoading = true;
-		successMessage = string.Empty;
-		errorMessage = string.Empty;
-		try
-		{
-			var urlRoute = MarkDownId == null ? "api/markdown/readme/" : $"/api/markdown?currentId={MarkDownId}";
-			var requestMsg = new HttpRequestMessage(HttpMethod.Get, urlRoute);
-			var response = await HttpClient.SendAsync(requestMsg);
-			if (response.IsSuccessStatusCode)
-			{
-				await SetSuccess(response, string.Empty);
-			}
-			else
-			{
-				SetError("an error has occured");
-			}
-		}
-		catch (Exception ex)
-		{
-			SetError(ex.Message);
-		}
-		finally
-		{
-			isLoading = false;
-		}
-	}
-
-	private async Task<string> GetJWT()
-	{
-		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
-		if (!string.IsNullOrWhiteSpace(UserMail))
-		{
-			var dataArray = jwt.Split(';', 2);
-			if (dataArray.Length == 2)
-				return dataArray[1];
-		}
-		return string.Empty;
-	}
-
-	private void ReloadPreview()
-	{
-		markupString = (MarkupString)markDownModel.Html;
-	}
-
-	private void CheckPreview(bool val)
-	{
-		checkPreview = val;
-	}
-
-	private void DisplayEditor(bool val)
-	{
-		displayEditor = val;
-	}
-
-	private async Task UpsertMarkDown(HttpMethod method)
-	{
-		try
-		{
-			isLoading = true;
-			successMessage = string.Empty;
-			errorMessage = string.Empty;
-			var requestMsg = new HttpRequestMessage(method, $"/api/markdown");
-			requestMsg.Headers.Add("Authorization", "Bearer " + await GetJWT());
-			requestMsg.Content = new StringContent(JsonConvert.SerializeObject(markDownModel), Encoding.UTF8, "application/json"); ;
-			var response = await HttpClient.SendAsync(requestMsg);
-			if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
-			{
-				await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-				isLoading = false;
-				SetError("You are not authorized, please log in again");
-				nav.NavigateTo("/", true);
-			}
-			else if (response.IsSuccessStatusCode)
-			{
-				var message = method == HttpMethod.Post ?
-				"Updated successfully" : method == HttpMethod.Put ? "Created successfully" : string.Empty;
-				await SetSuccess(response, message);
-			}
-			else
-			{
-				SetError("an error has occured");
-			}
-		}
-		catch (Exception ex)
-		{
-			SetError(ex.Message);
-		}
-		finally
-		{
-			isLoading = false;
-		}
-	}
-
-	private async Task SetSuccess(HttpResponseMessage response, string message)
-	{
-
-		var content= await response.Content.ReadFromJsonAsync<MarkDownModel>();
-		if (content != null)
-		{
-			markDownModel = content;
-		}
-		markupString = (MarkupString)markDownModel.Html;
-		MarkDownId = markDownModel.Id;
-		successMessage = message;
-	}
-
-	private void SetError(string message)
-	{
-		markupString = (MarkupString)markDownModel.Html;
-		MarkDownId = markDownModel.Id;
-		errorMessage = message;
-	}
 }

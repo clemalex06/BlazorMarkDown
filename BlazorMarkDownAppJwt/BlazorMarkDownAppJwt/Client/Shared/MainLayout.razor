@@ -1,57 +1,26 @@
 ﻿@inherits LayoutComponentBase
-@using BlazorMarkDownAppJwt.Shared
-@inject IJSRuntime jsr
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+	<div class="sidebar">
+		<NavMenu />
+	</div>
 
-    <main>
-        <div class="top-row px-4">
-            @if (string.IsNullOrWhiteSpace(userMail))
-            {
-                <a href="/login">Login</a>
+	<main>
+		<div class="top-row px-4">
+			@if (string.IsNullOrWhiteSpace(UserMail))
+			{
+				<a href="/login">Login</a>
 				<a href="/register">Register</a>
-            } else
-            {
-				<a>Hello, @userMail</a>
-                <a href="/logout">Logout</a>
-            }
-            <a href="/about">About</a>
-        </div>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+			}
+			else
+			{
+				<a>Hello, @UserMail</a>
+				<a href="/logout">Logout</a>
+			}
+			<a href="/about">About</a>
+		</div>
+		<article class="content px-4">
+			@Body
+		</article>
+	</main>
 </div>
-
-@code {
-	string? userMail;
-
-	private async Task<string?> GetUserMail()
-	{
-		var jwt = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
-		if (!string.IsNullOrWhiteSpace(jwt))
-		{
-			var dataArray = jwt.Split(';', 2);
-			if (dataArray.Length == 2)
-				return dataArray[0];
-		}
-		return null;
-	}
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-		try
-		{
-			userMail = await GetUserMail();
-		}
-		catch (Exception)
-		{
-			await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
-			userMail = null;
-		}
-	}
-}

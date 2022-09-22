@@ -18,7 +18,8 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var options = new DbContextOptionsBuilder().UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             Ctx = new DataBaseContext(options);
             Service = new UserService(this.Ctx);
-            CancellationToken = new CancellationToken();
+            var source = new CancellationTokenSource();
+            CancellationToken = source.Token;
         }
 
         [Test]
@@ -32,7 +33,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.AuthenticateUserAsync(email, password, CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -49,9 +50,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.AuthenticateUserAsync(email, password, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.That(result.Email, Is.EqualTo(email));
-            Assert.That(result.Password, Is.EqualTo(password));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(result?.Email, Is.EqualTo(email));
+                Assert.That(result?.Password, Is.EqualTo(password));
+            });
 
             // Clean
             this.Ctx.Users.Remove(existingUser);
@@ -72,8 +76,12 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.That(result, Is.EqualTo(newUser));
+            Assert.Multiple(() =>
+            {
+                Assert.That(result, Is.Not.Null);
+                Assert.That(result, Is.EqualTo(newUser));
+            });
+
 
             // Clean
             this.Ctx.Users.Remove(newUser);
@@ -97,11 +105,11 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
 
             // Clean
-            this.Ctx.Users.Remove(newUser);
-            this.Ctx.SaveChanges();
+            Ctx.Users.Remove(newUser);
+            Ctx.SaveChanges();
         }
 
         [Test]
@@ -139,7 +147,7 @@ namespace BlazorMarkDownAppJwt.UnitTests.Server.Services
             var result = await Service.AddUserAsync(newUser, CancellationToken);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
     }
 }

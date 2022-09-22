@@ -1,36 +1,32 @@
 ﻿@page "/login"
-@using BlazorMarkDownAppJwt.Shared
-@inject HttpClient Http
-@inject IJSRuntime jsr
-@inject NavigationManager nav
 
 <h3>Login</h3>
 <div class="row">
-	@if (!string.IsNullOrWhiteSpace(message))
+	@if (!string.IsNullOrWhiteSpace(Message))
 	{
 		<div class="alert alert-secondary" role="alert">
-			@message
+			@Message
 		</div>
 	}
 </div>
 
-@if (isDisabled)
+@if (IsDisabled)
 {
 	<div class="spinner"></div>
 }
 else
 {
-	<EditForm Model="user" OnValidSubmit="OnValid" style="max-width:500px;">
+	<EditForm Model="User" OnValidSubmit="OnValid" style="max-width:500px;">
 		<DataAnnotationsValidator />
 		<ValidationSummary />
 		<div class="mb-2">
-			<InputText class="form-control" @bind-Value="user.email" placeholder="Enter Email"></InputText>
+			<InputText class="form-control" @bind-Value="User.Email" placeholder="Enter Email"></InputText>
 		</div>
 		<div class="mb-2">
-			<InputText type="password" class="form-control" @bind-Value="user.password" placeholder="Enter Password"></InputText>
+			<InputText type="password" class="form-control" @bind-Value="User.Password" placeholder="Enter Password"></InputText>
 		</div>
 		<div class="mb-2 text-right">
-			<button class="btn btn-secondary" disabled="@isDisabled">login</button>
+			<button class="btn btn-secondary" disabled="@IsDisabled">login</button>
 		</div>
 	</EditForm>
 
@@ -40,38 +36,5 @@ else
 
 
 @code {
-	LoginModel user = new LoginModel();
-	string? message = string.Empty;
-	bool isDisabled = false;
 
-	private async Task OnValid()
-	{
-		try
-		{
-			isDisabled = true;
-			using (var msg = await Http.PostAsJsonAsync<LoginModel>("/api/auth/login", user, System.Threading.CancellationToken.None))
-			{
-				if (msg.IsSuccessStatusCode)
-				{
-					LoginResult? result = await msg.Content.ReadFromJsonAsync<LoginResult>();
-					message = result?.message;
-
-					if (result != null && result.success)
-					{
-						await jsr.InvokeVoidAsync("localStorage.setItem", "user", $"{result.email};{result.jwtBearer}").ConfigureAwait(false);
-						nav.NavigateTo("/", true);
-					}
-				}
-			}
-		}
-		catch
-		{
-
-		}
-		finally
-		{
-			isDisabled = false;
-		}
-
-	}
 }
